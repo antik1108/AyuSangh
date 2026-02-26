@@ -4,122 +4,177 @@
 
 # AyuSangh
 
-[![Status](https://img.shields.io/badge/status-planning%20phase-0f172a?style=flat-square)](#current-status)
-[![Docs](https://img.shields.io/badge/docs-in%20progress-2563eb?style=flat-square)](DOCS.md)
-[![Tracking](https://img.shields.io/badge/tracking-live-16a34a?style=flat-square)](TRACKING.md)
-[![Submission](https://img.shields.io/badge/proposal-submitted%2025--02--2026-1d4ed8?style=flat-square)](#important-dates)
+[![Category](https://img.shields.io/badge/category-digital%20healthcare-0f172a?style=flat-square)](#project-overview)
+[![Architecture](https://img.shields.io/badge/architecture-modular%20monolith-2563eb?style=flat-square)](#architecture-philosophy)
+[![Backend](https://img.shields.io/badge/backend-nestjs-16a34a?style=flat-square)](#tech-stack-planned)
+[![Frontend](https://img.shields.io/badge/frontend-nextjs%2014-1d4ed8?style=flat-square)](#tech-stack-planned)
 
-AyuSangh is our group project repository for final evaluation.
+AyuSangh is a **Digital Healthcare Discovery & Institutional Rating Platform** — a trust layer that helps patients discover, compare, and choose hospitals/labs using transparent data.
 
-This repository is currently focused on **documentation setup and planning**, so the team can complete UML, architecture decisions, and then start implementation in a structured way.
+Think: **Shiksha.com + trusted reviews + transparent pricing for healthcare institutions**.
 
-[Document Links](DOCS.md) •
-[Real-Time Tracking](TRACKING.md) •
-[Mandatory Deliverables](#mandatory-deliverables) •
-[Important Dates](#important-dates)
+[Project Overview](#project-overview) •
+[Core Features](#core-feature-ecosystem) •
+[Tech Stack](#tech-stack-planned) •
+[Architecture](#architecture-philosophy) •
+[Roadmap](#implementation-roadmap)
 
 </div>
 
-## Current Status
+## Project Overview
 
-- ✅ Repository initialized
-- ✅ Core documentation scaffold created
-- 🔄 UML + system design work in progress
-- ⏳ Implementation starts after documentation completion
+In India, people can find hospitals quickly, but struggle to choose the **right** one with confidence.
 
-## Mandatory Deliverables
+AyuSangh solves this by combining:
 
-### 1) GitHub Repository must include
+- Data-driven discovery
+- Verified and trust-scored reviews
+- Institutional transparency (accreditation, pricing, facilities)
+- Booking + provider workflow support
 
-- Complete, well-structured codebase
-- A clear `README.md` with:
-  - Project title and overview
-  - Tech stack (language, framework, database, tools)
-  - Setup and installation instructions
-  - How to run the project
-  - Architecture explanation
-  - Team members and contributions
+The goal is to help a patient find and book a suitable provider in under a minute, based on affordability, quality, and trust signals.
 
-### 2) Project Report (PDF) must cover
+## Project Vision
 
-- System Design optimization
-- OOP concepts used (Encapsulation, Inheritance, Polymorphism, Abstraction)
-- Minimum 2 Design Patterns and why they were used
-- SOLID principles mapping in codebase
-- UML diagrams:
-  - Class Diagram
-  - Use Case Diagram
-  - Sequence Diagram (at least 1 major workflow)
-  - ER Diagram (if applicable)
-- Problem statement + solution approach
-- Test cases + results
+Build the **Trust Infrastructure for Indian Healthcare** where:
 
-### 3) Live Demo
+- Patients make informed decisions with transparent, comparable data.
+- Hospitals/labs get a professional digital storefront.
+- The platform enforces quality through verification and moderation.
 
-- End-to-end working project demonstration during final evaluation
+## Core Feature Ecosystem
 
-## Evaluation Criteria
+### 1) Patient / User App (Discovery Experience)
 
-Project will be evaluated on:
+- Smart search by specialty, procedure, or institution name
+- Filter by location, price range, accreditation, and user ratings
+- Institution fact sheets (beds, ICU, equipment, OPD timings, doctor roster)
+- Price transparency tab for estimated procedure/test cost ranges
+- Verified review system (text, stars, photos, trust badges)
+- Real-time booking for OPD/lab slots + quote requests for major procedures
+- Personal dashboard for appointments and medical document vault
 
-- OOP concepts
-- Design Patterns
-- SOLID Principles
-- SDLC & System Design
-- UML Diagrams
+### 2) Provider App (Hospitals / Clinics / Labs)
 
-> Full rubric will be shared separately on Slack.
+- Digital storefront management (photos, about, mission, facilities)
+- Service and fee catalog (tests, surgeries, starting prices)
+- Doctor directory and availability management
+- Review response and abuse-report workflow
+- Lead/booking analytics and conversion visibility
+
+### 3) Honest Review & Trust Logic
+
+- Evidence-based reviews (bill/prescription upload for trust amplification)
+- Verified-patient tagging from confirmed platform bookings
+- Institutional Rating Score (IRS) driven by:
+  - User rating average
+  - Accreditation quality (e.g., NABH/NABL/ISO)
+  - Responsiveness to complaints and reviews
+
+### 4) Admin / Moderator Panel
+
+- Provider verification before public listing
+- Content moderation for spam/abuse/fake reviews
+- Platform-wide analytics (users, institutions, bookings)
+
+## User Journey (How It Works)
+
+1. User searches: “Best MRI lab in Jalpaiguri”
+2. Platform shows comparable labs with price and trust signals
+3. User validates profile data, reviews, accreditation
+4. User books a time slot
+5. Provider confirms booking
+6. User receives notification and later submits review
+
+## Tech Stack (Planned)
+
+| Layer | Technology | Why |
+|---|---|---|
+| Monorepo Workspace | `pnpm workspaces` | Multi-app management with consistent dependencies |
+| Backend | `NestJS` + `TypeScript` | Modular, scalable architecture aligned with SOLID |
+| Database | `PostgreSQL` + `Prisma` | ACID reliability + type-safe DB access |
+| Frontend | `Next.js 14` (App Router) | SSR, SEO, and performance for discovery pages |
+| UI | `Tailwind CSS` + `shadcn/ui` | Fast, clean, accessible enterprise-style UI |
+| Notifications (planned) | SMS/WhatsApp integration | Booking and status alerts |
+
+## Architecture Philosophy
+
+We are implementing a **Modular Monolith** where each domain is isolated but lives in one deployable system during early scale.
+
+Planned modules:
+
+- `Auth`
+- `Institution`
+- `Doctor`
+- `ServiceCatalog`
+- `Search`
+- `Review`
+- `Booking`
+- `AdminModeration`
+- `Analytics`
+
+Benefits:
+
+- Strong encapsulation and clear domain boundaries
+- Easier testing and maintainability
+- Future microservice extraction possible for high-traffic modules (e.g., booking/search)
 
 ## Proposed Repository Structure
 
 ```text
 .
+├─ apps/
+│  ├─ web/            # Next.js frontend
+│  └─ api/            # NestJS backend
+├─ packages/
+│  ├─ ui/             # shared UI components
+│  ├─ config/         # shared lint/ts configs
+│  └─ types/          # shared contracts/types
+├─ prisma/
+│  ├─ schema.prisma
+│  └─ migrations/
 ├─ docs/
 │  ├─ uml/
 │  ├─ report/
 │  └─ assets/
-├─ src/
 ├─ tests/
 ├─ DOCS.md
-├─ TRACKING.md
 └─ README.md
 ```
 
-## Tech Stack (Planning Stage)
+## Setup (Phase 1 - Documentation)
 
-Final stack decisions are tracked in [DOCS.md](DOCS.md) and will be finalized before implementation starts.
-
-| Area | Planned Choice | Status |
-|---|---|---|
-| Language | TBD | Pending |
-| Frontend | TBD | Pending |
-| Backend | TBD | Pending |
-| Database | TBD | Pending |
-| Hosting/DevOps | TBD | Pending |
-| Tools | TBD | Pending |
-
-## Setup & Run (Current Phase)
-
-Since implementation has not started yet, use these steps for documentation workflow:
+Current phase is architecture and documentation finalization.
 
 ```bash
 git clone <your-repo-url>
 cd AyuSangh
 ```
 
-Then keep all project references and status updates in:
+Use [DOCS.md](DOCS.md) for all source links and reference artifacts.
 
-- [DOCS.md](DOCS.md)
-- [TRACKING.md](TRACKING.md)
+## Setup & Run (Phase 2 - After Codebase Bootstrap)
 
-## Architecture (Will Be Updated)
+> These commands are planned and will be finalized once scaffolding starts.
 
-This section will be expanded after UML finalization and implementation kickoff. It will include:
+```bash
+pnpm install
+pnpm dev
+```
 
-- High-level system architecture
-- Module boundaries
-- Data flow summary
-- Scalability and performance strategy
+Possible app entry points:
+
+- Web: `http://localhost:3000`
+- API: `http://localhost:4000`
+
+## Mandatory Deliverables Coverage
+
+This repository is being prepared to include:
+
+- Complete, production-style codebase
+- Report-ready architecture and engineering documentation
+- UML artifacts and design rationale
+- Test scenarios and results
 
 ## Team Members & Contributions
 
@@ -132,19 +187,20 @@ This section will be expanded after UML finalization and implementation kickoff.
 | Member 3 | TBD | TBD | Active |
 | Member 4 | TBD | TBD | Active |
 
+## Implementation Roadmap
+
+- Finalize UML set (Class, Use Case, Sequence, ER)
+- Lock system design and module boundaries
+- Initialize monorepo with Next.js + NestJS + Prisma
+- Implement core flows: discovery → profile → booking → review
+- Add moderation and trust-scoring logic
+- Validate with test cases and demo run
+
 ## Important Dates
 
 - Group formation: **20-02-2026**
 - Proposal submission: **25-02-2026**
 
-## Next Milestones
-
-- Finalize tech stack
-- Complete UML set (Class, Use Case, Sequence, ER)
-- Lock design patterns + SOLID mapping
-- Start development phase
-- Add test cases and validation report
-
 ---
 
-Built as a structured foundation for the AyuSangh final project.
+Building a transparent, trustworthy, and data-driven healthcare discovery platform for real-world decision-making.
