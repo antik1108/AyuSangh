@@ -26,7 +26,6 @@ This file keeps all project-related reference links in one place.
 ## Delivery Checklist Links
 
 - Repository main page: [README.md](README.md)
-- Live progress tracker: [TRACKING.md](TRACKING.md)
 
 ---
 
