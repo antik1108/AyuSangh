@@ -1,206 +1,113 @@
-<hr />
-
-<div align="center">
-
 # AyuSangh
 
-[![Category](https://img.shields.io/badge/category-digital%20healthcare-0f172a?style=flat-square)](#project-overview)
-[![Architecture](https://img.shields.io/badge/architecture-modular%20monolith-2563eb?style=flat-square)](#architecture-philosophy)
-[![Backend](https://img.shields.io/badge/backend-nestjs-16a34a?style=flat-square)](#tech-stack-planned)
-[![Frontend](https://img.shields.io/badge/frontend-nextjs%2014-1d4ed8?style=flat-square)](#tech-stack-planned)
+Digital Healthcare Discovery & Institutional Rating Platform  
+System Design Group Project · 2026
 
-AyuSangh is a **Digital Healthcare Discovery & Institutional Rating Platform** — a trust layer that helps patients discover, compare, and choose hospitals/labs using transparent data.
+## Overview
 
-Think: **Shiksha.com + trusted reviews + transparent pricing for healthcare institutions**.
+AyuSangh is a healthcare discovery and institutional rating platform focused on helping users compare hospitals and doctors through transparent profile data, structured search, and trusted review workflows.
 
-[Project Overview](#project-overview) •
-[Core Features](#core-feature-ecosystem) •
-[Tech Stack](#tech-stack-planned) •
-[Architecture](#architecture-philosophy) •
-[Roadmap](#implementation-roadmap)
+This repository currently contains the official project architecture and design documentation, including technical stack standards and UML artifacts.
 
-</div>
+## Technology Stack (Official)
 
-## Project Overview
+| Layer / Category | Technology / Decision |
+|---|---|
+| Runtime | Node.js LTS |
+| Language | TypeScript |
+| Framework | NestJS |
+| Database | PostgreSQL |
+| ORM | Prisma |
+| Package Manager | pnpm (strict - no npm) |
+| Architecture | Modular Monolith |
+| Repository Style | Monorepo |
 
-In India, people can find hospitals quickly, but struggle to choose the **right** one with confidence.
+Primary reference: [Documentation/Tech_stack.md](Documentation/Tech_stack.md)
 
-AyuSangh solves this by combining:
+Official docs source link:  
+https://docs.google.com/document/d/1-G22isMKkl9s3SFiftLLafNPJfjmmNOha60sfwO6ZQk/edit?usp=sharing
 
-- Data-driven discovery
-- Verified and trust-scored reviews
-- Institutional transparency (accreditation, pricing, facilities)
-- Booking + provider workflow support
+## Architecture Summary
 
-The goal is to help a patient find and book a suitable provider in under a minute, based on affordability, quality, and trust signals.
+- Architecture style: Modular Monolith
+- Repository strategy: Monorepo
+- Scalability path: Microservices-ready
+- Security baseline: JWT + RBAC
+- Design discipline: OOP + SOLID + Repository/Service/Strategy patterns
 
-## Project Vision
+## Project Documentation Index
 
-Build the **Trust Infrastructure for Indian Healthcare** where:
+### Core documentation
 
-- Patients make informed decisions with transparent, comparable data.
-- Hospitals/labs get a professional digital storefront.
-- The platform enforces quality through verification and moderation.
+- Document links index: [Documentation/README.md](Documentation/README.md)
+- Technical stack and standards: [Documentation/Tech_stack.md](Documentation/Tech_stack.md)
 
-## Core Feature Ecosystem
+### UML diagrams
 
-### 1) Patient / User App (Discovery Experience)
+- Class Diagram directory: [Documentation/UML_Diagrams/Class_Diagram](Documentation/UML_Diagrams/Class_Diagram)
+- ER Diagram reference: [Documentation/UML_Diagrams/ER_Diagrams/ER.md](Documentation/UML_Diagrams/ER_Diagrams/ER.md)
+- Use Case Diagram reference: [Documentation/UML_Diagrams/UseCase_Diagram/UseCase.md](Documentation/UML_Diagrams/UseCase_Diagram/UseCase.md)
+- Sequence Diagram - Admin Updates Institution Profile: [Documentation/UML_Diagrams/Sequence_Diagrams/Admin_Updates_Institution_Profile/Admin_Updates_Institution_Profile.d2](Documentation/UML_Diagrams/Sequence_Diagrams/Admin_Updates_Institution_Profile/Admin_Updates_Institution_Profile.d2)
+- Sequence Diagram - Search Institutions: [Documentation/UML_Diagrams/Sequence_Diagrams/Search_Institutions/Search_Institutions.d2](Documentation/UML_Diagrams/Sequence_Diagrams/Search_Institutions/Search_Institutions.d2)
+- Sequence Diagram - Submit Review (source): [Documentation/UML_Diagrams/Sequence_Diagrams/Submit_Review/Submit_Review.d2](Documentation/UML_Diagrams/Sequence_Diagrams/Submit_Review/Submit_Review.d2)
+- Sequence Diagram - Submit Review (rendered): [Documentation/UML_Diagrams/Sequence_Diagrams/Submit_Review/Submit_Review.svg](Documentation/UML_Diagrams/Sequence_Diagrams/Submit_Review/Submit_Review.svg)
 
-- Smart search by specialty, procedure, or institution name
-- Filter by location, price range, accreditation, and user ratings
-- Institution fact sheets (beds, ICU, equipment, OPD timings, doctor roster)
-- Price transparency tab for estimated procedure/test cost ranges
-- Verified review system (text, stars, photos, trust badges)
-- Real-time booking for OPD/lab slots + quote requests for major procedures
-- Personal dashboard for appointments and medical document vault
+### External UML resources
 
-### 2) Provider App (Hospitals / Clinics / Labs)
+- ER model (dbdiagram): https://dbdiagram.io/d/AyuSanghER_Capstion-69c11fee78c6c4bc7a45f552
+- Use case image (Drive): https://drive.google.com/file/d/1FBgxSePDBqD8_KT6PMWXYyx_829Le809/view?usp=sharing
 
-- Digital storefront management (photos, about, mission, facilities)
-- Service and fee catalog (tests, surgeries, starting prices)
-- Doctor directory and availability management
-- Review response and abuse-report workflow
-- Lead/booking analytics and conversion visibility
+## Domain Modules (Planned Backend Boundaries)
 
-### 3) Honest Review & Trust Logic
+- auth
+- hospital
+- doctor
+- review
+- cost
+- accreditation
+- search
+- community
+- analytics
 
-- Evidence-based reviews (bill/prescription upload for trust amplification)
-- Verified-patient tagging from confirmed platform bookings
-- Institutional Rating Score (IRS) driven by:
-  - User rating average
-  - Accreditation quality (e.g., NABH/NABL/ISO)
-  - Responsiveness to complaints and reviews
+## Engineering Standards
 
-### 4) Admin / Moderator Panel
+- Use pnpm only for package management.
+- Do not use npm in this project.
+- Keep business logic in services, not controllers.
+- Use DTOs for typed request/response boundaries.
+- Avoid `any` in TypeScript.
+- Follow SOLID and clean module boundaries.
 
-- Provider verification before public listing
-- Content moderation for spam/abuse/fake reviews
-- Platform-wide analytics (users, institutions, bookings)
-
-## User Journey (How It Works)
-
-1. User searches: “Best MRI lab in Jalpaiguri”
-2. Platform shows comparable labs with price and trust signals
-3. User validates profile data, reviews, accreditation
-4. User books a time slot
-5. Provider confirms booking
-6. User receives notification and later submits review
-
-## Tech Stack (Planned)
-
-| Layer | Technology | Why |
-|---|---|---|
-| Monorepo Workspace | `pnpm workspaces` | Multi-app management with consistent dependencies |
-| Backend | `NestJS` + `TypeScript` | Modular, scalable architecture aligned with SOLID |
-| Database | `PostgreSQL` + `Prisma` | ACID reliability + type-safe DB access |
-| Frontend | `Next.js 14` (App Router) | SSR, SEO, and performance for discovery pages |
-| UI | `Tailwind CSS` + `shadcn/ui` | Fast, clean, accessible enterprise-style UI |
-| Notifications (planned) | SMS/WhatsApp integration | Booking and status alerts |
-
-## Architecture Philosophy
-
-We are implementing a **Modular Monolith** where each domain is isolated but lives in one deployable system during early scale.
-
-Planned modules:
-
-- `Auth`
-- `Institution`
-- `Doctor`
-- `ServiceCatalog`
-- `Search`
-- `Review`
-- `Booking`
-- `AdminModeration`
-- `Analytics`
-
-Benefits:
-
-- Strong encapsulation and clear domain boundaries
-- Easier testing and maintainability
-- Future microservice extraction possible for high-traffic modules (e.g., booking/search)
-
-## Proposed Repository Structure
+## Current Repository Structure
 
 ```text
-.
-├─ apps/
-│  ├─ web/            # Next.js frontend
-│  └─ api/            # NestJS backend
-├─ packages/
-│  ├─ ui/             # shared UI components
-│  ├─ config/         # shared lint/ts configs
-│  └─ types/          # shared contracts/types
-├─ prisma/
-│  ├─ schema.prisma
-│  └─ migrations/
-├─ docs/
-│  ├─ uml/
-│  ├─ report/
-│  └─ assets/
-├─ tests/
-├─ DOCS.md
-└─ README.md
+AyuSangh/
+├── README.md
+└── Documentation/
+    ├── README.md
+    ├── Tech_stack.md
+    └── UML_Diagrams/
+        ├── Class_Diagram/
+        ├── ER_Diagrams/
+        │   └── ER.md
+        ├── Sequence_Diagrams/
+        │   ├── Admin_Updates_Institution_Profile/
+        │   │   └── Admin_Updates_Institution_Profile.d2
+        │   ├── Search_Institutions/
+        │   │   └── Search_Institutions.d2
+        │   └── Submit_Review/
+        │       ├── Submit_Review.d2
+        │       └── Submit_Review.svg
+        └── UseCase_Diagram/
+            └── UseCase.md
 ```
 
-## Setup (Phase 1 - Documentation)
+## Status
 
-Current phase is architecture and documentation finalization.
+Current phase: Architecture and documentation finalization.
 
-```bash
-git clone <your-repo-url>
-cd AyuSangh
-```
+Next phase: Monorepo bootstrap and implementation of API modules based on approved architecture.
 
-Use [DOCS.md](DOCS.md) for all source links and reference artifacts.
+## License
 
-## Setup & Run (Phase 2 - After Codebase Bootstrap)
-
-> These commands are planned and will be finalized once scaffolding starts.
-
-```bash
-pnpm install
-pnpm dev
-```
-
-Possible app entry points:
-
-- Web: `http://localhost:3000`
-- API: `http://localhost:4000`
-
-## Mandatory Deliverables Coverage
-
-This repository is being prepared to include:
-
-- Complete, production-style codebase
-- Report-ready architecture and engineering documentation
-- UML artifacts and design rationale
-- Test scenarios and results
-
-## Team Members & Contributions
-
-> Update this table with actual names and responsibilities.
-
-| Team Member | Role | Primary Contribution | Status |
-|---|---|---|---|
-| Member 1 | TBD | TBD | Active |
-| Member 2 | TBD | TBD | Active |
-| Member 3 | TBD | TBD | Active |
-| Member 4 | TBD | TBD | Active |
-
-## Implementation Roadmap
-
-- Finalize UML set (Class, Use Case, Sequence, ER)
-- Lock system design and module boundaries
-- Initialize monorepo with Next.js + NestJS + Prisma
-- Implement core flows: discovery → profile → booking → review
-- Add moderation and trust-scoring logic
-- Validate with test cases and demo run
-
-## Important Dates
-
-- Group formation: **20-02-2026**
-- Proposal submission: **25-02-2026**
-
----
-
-Building a transparent, trustworthy, and data-driven healthcare discovery platform for real-world decision-making.
+Internal academic project documentation. Confidential - Internal Use Only.
