@@ -52,10 +52,6 @@ https://docs.google.com/document/d/1-G22isMKkl9s3SFiftLLafNPJfjmmNOha60sfwO6ZQk/
 - Sequence Diagram - Submit Review (source): [Documentation/UML_Diagrams/Sequence_Diagrams/Submit_Review/Submit_Review.d2](Documentation/UML_Diagrams/Sequence_Diagrams/Submit_Review/Submit_Review.d2)
 - Sequence Diagram - Submit Review (rendered): [Documentation/UML_Diagrams/Sequence_Diagrams/Submit_Review/Submit_Review.svg](Documentation/UML_Diagrams/Sequence_Diagrams/Submit_Review/Submit_Review.svg)
 
-### External UML resources
-
-- ER model (dbdiagram): https://dbdiagram.io/d/AyuSanghER_Capstion-69c11fee78c6c4bc7a45f552
-- Use case image (Drive): https://drive.google.com/file/d/1FBgxSePDBqD8_KT6PMWXYyx_829Le809/view?usp=sharing
 
 ## Domain Modules (Planned Backend Boundaries)
 
