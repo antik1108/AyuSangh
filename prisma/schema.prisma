@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PATIENT
+  DOCTOR
+  HOSPITAL_ADMIN
+  PLATFORM_ADMIN
+}
+
+model User {
+  id             String          @id @default(uuid())
+  email          String          @unique
+  passwordHash   String
+  role           Role            @default(PATIENT)
+  firstName      String?
+  lastName       String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  hospitals      Hospital[]      // If role is HOSPITAL_ADMIN
+  doctorProfile  Doctor?
+  reviews        Review[]
+  communityPosts CommunityPost[]
+}
+
+model Location {
+  id        String    @id @default(uuid())
+  address   String
+  city      String
+  state     String
+  zipCode   String
+  country   String
+  latitude  Float?
+  longitude Float?
+  
+  hospital  Hospital?
+}
+
+model Hospital {
+  id             String          @id @default(uuid())
+  name           String
+  description    String?
+  adminId        String
+  admin          User            @relation(fields: [adminId], references: [id])
+  locationId     String          @unique
+  location       Location        @relation(fields: [locationId], references: [id])
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  departments    Department[]
+  accreditations Accreditation[]
+  costs          Cost[]
+  reviews        Review[]
+}
+
+model Doctor {
+  id              String   @id @default(uuid())
+  userId          String?  @unique
+  user            User?    @relation(fields: [userId], references: [id])
+  firstName       String
+  lastName        String
+  specialization  String
+  experienceYears Int
+  bio             String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  reviews         Review[]
+}
+
+model Department {
+  id          String   @id @default(uuid())
+  name        String
+  hospitalId  String
+  hospital    Hospital @relation(fields: [hospitalId], references: [id])
+}
+
+model Accreditation {
+  id          String   @id @default(uuid())
+  name        String
+  issueDate   DateTime
+  expiryDate  DateTime?
+  hospitalId  String
+  hospital    Hospital @relation(fields: [hospitalId], references: [id])
+}
+
+model Cost {
+  id             String   @id @default(uuid())
+  procedureName  String
+  estimatedCost  Float
+  hospitalId     String
+  hospital       Hospital @relation(fields: [hospitalId], references: [id])
+}
+
+model Review {
+  id          String   @id @default(uuid())
+  rating      Int
+  text        String?
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+  hospitalId  String?
+  hospital    Hospital? @relation(fields: [hospitalId], references: [id])
+  doctorId    String?
+  doctor      Doctor?   @relation(fields: [doctorId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model CommunityPost {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

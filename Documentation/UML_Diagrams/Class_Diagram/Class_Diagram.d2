@@ -1,0 +1,106 @@
+direction: right
+
+# System Architecture Class Diagram for AyuSangh (NestJS Monolith)
+# Follows the Controller -> Service -> Repository Pattern
+
+classes: {
+    # ------------------ Base Classes ------------------
+    BaseRepository: {
+        shape: class
+        + model: PrismaDelegate
+        + findById(id: String): Promise<T>
+        + findAll(): Promise<T[]>
+        + create(data: any): Promise<T>
+        + update(id: String, data: any): Promise<T>
+        + delete(id: String): Promise<T>
+    }
+
+    TransformInterceptor: {
+        shape: class
+        + intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>>
+    }
+
+    AllExceptionsFilter: {
+        shape: class
+        + catch(exception: unknown, host: ArgumentsHost): void
+    }
+
+    # ------------------ Auth Module ------------------
+    AuthController: {
+        shape: class
+        + login(dto: LoginDto): Promise<Response>
+        + registerPatient(dto: RegisterDto): Promise<Response>
+        + registerDoctor(dto: RegisterDoctorDto): Promise<Response>
+    }
+
+    AuthService: {
+        shape: class
+        - jwtService: JwtService
+        - userRepository: UserRepository
+        + validateUser(email, pass): Promise<User>
+        + login(user: any): Promise<Token>
+        + register(dto: any, role: Role): Promise<User>
+    }
+
+    UserRepository: {
+        shape: class
+        ~ model: Prisma.UserDelegate
+        + findByEmail(email: String): Promise<User>
+    }
+
+    # ------------------ Hospital Module ------------------
+    HospitalController: {
+        shape: class
+        + searchHospitals(query: SearchQueryDto): Promise<Response>
+        + getProfile(id: String): Promise<Response>
+        + registerHospital(dto: RegisterHospitalDto): Promise<Response>
+    }
+
+    HospitalService: {
+        shape: class
+        - hospitalRepository: HospitalRepository
+        + getHospitalProfile(id: String): Promise<Hospital>
+        + registerHospital(dto: RegisterHospitalDto): Promise<Hospital>
+    }
+
+    HospitalRepository: {
+        shape: class
+        ~ model: Prisma.HospitalDelegate
+        + searchByLocationAndName(lat, lng, name): Promise<Hospital[]>
+    }
+
+    # ------------------ Review Module ------------------
+    ReviewController: {
+        shape: class
+        + submitReview(dto: SubmitReviewDto): Promise<Response>
+    }
+
+    ReviewService: {
+        shape: class
+        - reviewRepository: ReviewRepository
+        - ratingStrategy: IRatingStrategy
+        + submitReview(dto: SubmitReviewDto): Promise<Review>
+        - calculateNewAverage(hospitalId: String): void
+    }
+
+    ReviewRepository: {
+        shape: class
+        ~ model: Prisma.ReviewDelegate
+        + findByHospital(hospitalId: String): Promise<Review[]>
+    }
+}
+
+# ------------------ Inheritance ------------------
+classes.UserRepository -> classes.BaseRepository: extends
+classes.HospitalRepository -> classes.BaseRepository: extends
+classes.ReviewRepository -> classes.BaseRepository: extends
+
+# ------------------ Dependency Injection ------------------
+classes.AuthController -> classes.AuthService: injects
+classes.AuthService -> classes.UserRepository: injects
+
+classes.HospitalController -> classes.HospitalService: injects
+classes.HospitalService -> classes.HospitalRepository: injects
+
+classes.ReviewController -> classes.ReviewService: injects
+classes.ReviewService -> classes.ReviewRepository: injects
