@@ -46,17 +46,23 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("../users/users.service");
 const jwt_1 = require("@nestjs/jwt");
+const database_service_1 = require("../database/database.service");
 const bcrypt = __importStar(require("bcrypt"));
+const crypto = __importStar(require("crypto"));
 let AuthService = class AuthService {
     usersService;
     jwtService;
-    constructor(usersService, jwtService) {
+    databaseService;
+    accessTokenExpiry = '8h';
+    refreshTokenExpiry = '7d';
+    constructor(usersService, jwtService, databaseService) {
         this.usersService = usersService;
         this.jwtService = jwtService;
+        this.databaseService = databaseService;
     }
     async validateUser(email, pass) {
         const user = await this.usersService.findOneByEmail(email);
-        if (user && await bcrypt.compare(pass, user.passwordHash)) {
+        if (user && (await bcrypt.compare(pass, user.passwordHash))) {
             const { passwordHash, ...result } = user;
             return result;
         }
@@ -64,10 +70,76 @@ let AuthService = class AuthService {
     }
     async login(user) {
         const payload = { email: user.email, sub: user.id, role: user.role };
+        const accessToken = this.jwtService.sign(payload, {
+            expiresIn: this.accessTokenExpiry,
+        });
+        const refreshToken = this._generateRandomToken();
+        const refreshTokenExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        await this.databaseService.refreshToken.create({
+            data: {
+                token: refreshToken,
+                userEmail: user.email,
+                expiresAt: refreshTokenExpiresAt,
+            },
+        });
+        await this.databaseService.user.update({
+            where: { id: user.id },
+            data: {
+                refreshTokenExpiresAt: refreshTokenExpiresAt,
+            },
+        });
         return {
-            access_token: this.jwtService.sign(payload),
+            access_token: accessToken,
+            refresh_token: refreshToken,
+            expires_in: '8h',
+            token_type: 'Bearer',
             user,
         };
+    }
+    async refreshAccessToken(refreshToken) {
+        const tokenRecord = await this.databaseService.refreshToken.findUnique({
+            where: { token: refreshToken },
+        });
+        if (!tokenRecord ||
+            tokenRecord.expiresAt < new Date() ||
+            tokenRecord.revokedAt !== null) {
+            throw new common_1.UnauthorizedException('Invalid or expired refresh token');
+        }
+        const user = await this.usersService.findOneByEmail(tokenRecord.userEmail);
+        if (!user) {
+            throw new common_1.UnauthorizedException('User not found');
+        }
+        const payload = { email: user.email, sub: user.id, role: user.role };
+        const newAccessToken = this.jwtService.sign(payload, {
+            expiresIn: this.accessTokenExpiry,
+        });
+        return {
+            access_token: newAccessToken,
+            refresh_token: refreshToken,
+            expires_in: '8h',
+            token_type: 'Bearer',
+        };
+    }
+    async logout(refreshToken) {
+        await this.databaseService.refreshToken.update({
+            where: { token: refreshToken },
+            data: { revokedAt: new Date() },
+        });
+    }
+    async validateRefreshToken(refreshToken) {
+        const tokenRecord = await this.databaseService.refreshToken.findUnique({
+            where: { token: refreshToken },
+        });
+        if (!tokenRecord) {
+            throw new common_1.UnauthorizedException('Refresh token not found');
+        }
+        if (tokenRecord.expiresAt < new Date()) {
+            throw new common_1.UnauthorizedException('Refresh token has expired');
+        }
+        if (tokenRecord.revokedAt !== null) {
+            throw new common_1.UnauthorizedException('Refresh token has been revoked');
+        }
+        return tokenRecord;
     }
     async registerUser(data) {
         return this.usersService.createPatient(data);
@@ -75,11 +147,15 @@ let AuthService = class AuthService {
     async registerHospital(data) {
         return this.usersService.createHospitalAdmin(data);
     }
+    _generateRandomToken() {
+        return crypto.randomBytes(32).toString('hex');
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [users_service_1.UsersService,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        database_service_1.DatabaseService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

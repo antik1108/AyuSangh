@@ -11,14 +11,18 @@ const common_1 = require("@nestjs/common");
 const hospital_service_1 = require("./hospital.service");
 const hospital_controller_1 = require("./hospital.controller");
 const hospital_repository_1 = require("./hospital.repository");
+const favourites_service_1 = require("./favourites.service");
+const database_module_1 = require("../database/database.module");
+const cloudinary_service_1 = require("../common/services/cloudinary.service");
 let HospitalModule = class HospitalModule {
 };
 exports.HospitalModule = HospitalModule;
 exports.HospitalModule = HospitalModule = __decorate([
     (0, common_1.Module)({
+        imports: [database_module_1.DatabaseModule],
         controllers: [hospital_controller_1.HospitalController],
-        providers: [hospital_service_1.HospitalService, hospital_repository_1.HospitalRepository],
-        exports: [hospital_service_1.HospitalService]
+        providers: [hospital_service_1.HospitalService, hospital_repository_1.HospitalRepository, favourites_service_1.FavouritesService, cloudinary_service_1.CloudinaryService],
+        exports: [hospital_service_1.HospitalService, favourites_service_1.FavouritesService],
     })
 ], HospitalModule);
 //# sourceMappingURL=hospital.module.js.map

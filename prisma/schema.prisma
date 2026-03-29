@@ -17,13 +17,29 @@ enum Role {
   PLATFORM_ADMIN
 }
 
+enum InstitutionType {
+  HOSPITAL
+  CLINIC
+  DIAGNOSTIC_CENTRE
+  NURSING_HOME
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id             String          @id @default(uuid())
   email          String          @unique
   passwordHash   String
+  refreshToken   String?         // For refresh token flow
+  refreshTokenExpiresAt DateTime? // Refresh token expiry
   role           Role            @default(PATIENT)
   firstName      String?
   lastName       String?
+  profilePhoto   String?         // URL to Cloudinary or storage
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
@@ -31,6 +47,7 @@ model User {
   doctorProfile  Doctor?
   reviews        Review[]
   communityPosts CommunityPost[]
+  favourites     Favourite[]     // Favourite institutions
 }
 
 model Location {
@@ -44,23 +61,36 @@ model Location {
   longitude Float?
   
   hospital  Hospital?
+
+  @@index([city])
+  @@index([state])
 }
 
 model Hospital {
-  id             String          @id @default(uuid())
-  name           String
-  description    String?
-  adminId        String
-  admin          User            @relation(fields: [adminId], references: [id])
-  locationId     String          @unique
-  location       Location        @relation(fields: [locationId], references: [id])
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  id               String          @id @default(uuid())
+  name             String
+  description      String?
+  institutionType  InstitutionType @default(HOSPITAL)
+  adminId          String
+  admin            User            @relation(fields: [adminId], references: [id])
+  locationId       String          @unique
+  location         Location        @relation(fields: [locationId], references: [id])
+  rating           Float?          // Cached average rating
+  isActive         Boolean         @default(true)
+  phone            String?
+  website          String?
+  email            String?
+  profilePhoto     String?         // URL to profile photo
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 
-  departments    Department[]
-  accreditations Accreditation[]
-  costs          Cost[]
-  reviews        Review[]
+  departments      Department[]
+  accreditations   Accreditation[]
+  costs            Cost[]
+  reviews          Review[]
+  doctors          DoctorInstitution[] // M2M relationship to doctors
+  images           InstitutionImage[]
+  favourites       Favourite[]
 }
 
 model Doctor {
@@ -72,10 +102,14 @@ model Doctor {
   specialization  String
   experienceYears Int
   bio             String?
+  phone           String?
+  profilePhoto    String?  // URL to Cloudinary or storage
+  isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   reviews         Review[]
+  institutions    DoctorInstitution[] // M2M relationship to institutions
 }
 
 model Department {
@@ -103,16 +137,23 @@ model Cost {
 }
 
 model Review {
-  id          String   @id @default(uuid())
-  rating      Int
-  text        String?
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id])
-  hospitalId  String?
-  hospital    Hospital? @relation(fields: [hospitalId], references: [id])
-  doctorId    String?
-  doctor      Doctor?   @relation(fields: [doctorId], references: [id])
-  createdAt   DateTime @default(now())
+  id             String        @id @default(uuid())
+  rating         Int
+  text           String?
+  authorId       String
+  author         User          @relation(fields: [authorId], references: [id])
+  hospitalId     String?
+  hospital       Hospital?     @relation(fields: [hospitalId], references: [id])
+  doctorId       String?
+  doctor         Doctor?       @relation(fields: [doctorId], references: [id])
+  status         ReviewStatus  @default(PENDING)
+  adminReply     String?       // Admin's reply to review
+  adminReplyAt   DateTime?     // When admin replied
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // Composite unique constraint: one review per patient per institution per doctor
+  @@unique([authorId, hospitalId, doctorId], name: "unique_review_per_entity")
 }
 
 model CommunityPost {
@@ -123,4 +164,58 @@ model CommunityPost {
   author      User     @relation(fields: [authorId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// Many-to-Many: Doctor to Institution relationship
+model DoctorInstitution {
+  id            String    @id @default(uuid())
+  doctorId      String
+  doctor        Doctor    @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  hospitalId    String
+  hospital      Hospital  @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  joinedAt      DateTime  @default(now())
+  
+  @@unique([doctorId, hospitalId])
+  @@index([doctorId])
+  @@index([hospitalId])
+}
+
+// User's favourite institutions
+model Favourite {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hospitalId  String
+  hospital    Hospital  @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  addedAt     DateTime  @default(now())
+  
+  @@unique([userId, hospitalId])
+  @@index([userId])
+  @@index([hospitalId])
+}
+
+// Institution images uploaded to Cloudinary
+model InstitutionImage {
+  id          String    @id @default(uuid())
+  hospitalId  String
+  hospital    Hospital  @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  imageUrl    String    // Cloudinary URL
+  altText     String?   // For accessibility
+  isProfilePhoto Boolean @default(false)
+  uploadedAt  DateTime  @default(now())
+  
+  @@index([hospitalId])
+}
+
+// Refresh tokens for secure token rotation
+model RefreshToken {
+  id        String    @id @default(uuid())
+  token     String    @unique
+  userEmail String    // Store email for lookups during token validation
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  
+  @@index([userEmail])
+  @@index([expiresAt])
 }

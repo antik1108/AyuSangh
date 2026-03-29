@@ -1,22 +1,34 @@
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { DatabaseService } from '../database/database.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { RegisterHospitalDto } from './dto/register-hospital.dto';
+import { AuthenticatedUser, LoginResponse, RefreshTokenResponse } from './types';
 export declare class AuthService {
     private usersService;
     private jwtService;
-    constructor(usersService: UsersService, jwtService: JwtService);
-    validateUser(email: string, pass: string): Promise<any>;
-    login(user: any): Promise<{
-        access_token: string;
-        user: any;
+    private databaseService;
+    private readonly accessTokenExpiry;
+    private readonly refreshTokenExpiry;
+    constructor(usersService: UsersService, jwtService: JwtService, databaseService: DatabaseService);
+    validateUser(email: string, pass: string): Promise<AuthenticatedUser | null>;
+    login(user: AuthenticatedUser): Promise<LoginResponse>;
+    refreshAccessToken(refreshToken: string): Promise<RefreshTokenResponse>;
+    logout(refreshToken: string): Promise<void>;
+    validateRefreshToken(refreshToken: string): Promise<{
+        id: string;
+        createdAt: Date;
+        token: string;
+        userEmail: string;
+        expiresAt: Date;
+        revokedAt: Date | null;
     }>;
     registerUser(data: RegisterUserDto): Promise<{
         id: string;
-        firstName: string | null;
-        lastName: string | null;
         email: string;
         role: import("@prisma/client").$Enums.Role;
+        firstName: string | null;
+        lastName: string | null;
     }>;
     registerHospital(data: RegisterHospitalDto): Promise<{
         user: {
@@ -31,4 +43,5 @@ export declare class AuthService {
             name: string;
         };
     }>;
+    private _generateRandomToken;
 }

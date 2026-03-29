@@ -10,17 +10,19 @@ exports.SearchModule = void 0;
 const common_1 = require("@nestjs/common");
 const search_service_1 = require("./search.service");
 const search_controller_1 = require("./search.controller");
+const advanced_search_service_1 = require("./advanced-search.service");
 const hospital_module_1 = require("../hospital/hospital.module");
 const doctor_module_1 = require("../doctor/doctor.module");
+const database_module_1 = require("../database/database.module");
 let SearchModule = class SearchModule {
 };
 exports.SearchModule = SearchModule;
 exports.SearchModule = SearchModule = __decorate([
     (0, common_1.Module)({
-        imports: [hospital_module_1.HospitalModule, doctor_module_1.DoctorModule],
+        imports: [hospital_module_1.HospitalModule, doctor_module_1.DoctorModule, database_module_1.DatabaseModule],
         controllers: [search_controller_1.SearchController],
-        providers: [search_service_1.SearchService],
-        exports: [search_service_1.SearchService],
+        providers: [search_service_1.SearchService, advanced_search_service_1.AdvancedSearchService],
+        exports: [search_service_1.SearchService, advanced_search_service_1.AdvancedSearchService],
     })
 ], SearchModule);
 //# sourceMappingURL=search.module.js.map

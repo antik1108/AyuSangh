@@ -5,31 +5,37 @@ export declare class UsersService {
     private prisma;
     constructor(prisma: DatabaseService);
     findOneByEmail(email: string): Promise<{
+        refreshToken: string | null;
         id: string;
+        email: string;
+        profilePhoto: string | null;
         createdAt: Date;
         updatedAt: Date;
+        passwordHash: string;
+        refreshTokenExpiresAt: Date | null;
+        role: import("@prisma/client").$Enums.Role;
         firstName: string | null;
         lastName: string | null;
-        email: string;
-        role: import("@prisma/client").$Enums.Role;
-        passwordHash: string;
     } | null>;
     findOneById(id: string): Promise<{
+        refreshToken: string | null;
         id: string;
+        email: string;
+        profilePhoto: string | null;
         createdAt: Date;
         updatedAt: Date;
+        passwordHash: string;
+        refreshTokenExpiresAt: Date | null;
+        role: import("@prisma/client").$Enums.Role;
         firstName: string | null;
         lastName: string | null;
-        email: string;
-        role: import("@prisma/client").$Enums.Role;
-        passwordHash: string;
     } | null>;
     createPatient(data: RegisterUserDto): Promise<{
         id: string;
-        firstName: string | null;
-        lastName: string | null;
         email: string;
         role: import("@prisma/client").$Enums.Role;
+        firstName: string | null;
+        lastName: string | null;
     }>;
     createHospitalAdmin(data: RegisterHospitalDto): Promise<{
         user: {

@@ -12,10 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HospitalService = void 0;
 const common_1 = require("@nestjs/common");
 const hospital_repository_1 = require("./hospital.repository");
+const database_service_1 = require("../database/database.service");
 let HospitalService = class HospitalService {
     hospitalRepo;
-    constructor(hospitalRepo) {
+    prisma;
+    constructor(hospitalRepo, prisma) {
         this.hospitalRepo = hospitalRepo;
+        this.prisma = prisma;
     }
     async search(name, city) {
         return this.hospitalRepo.searchHospitals(name, city);
@@ -42,10 +45,51 @@ let HospitalService = class HospitalService {
             }
         });
     }
+    async updateProfilePhoto(hospitalId, photoUrl) {
+        const hospital = await this.prisma.hospital.findUnique({
+            where: { id: hospitalId },
+        });
+        if (!hospital) {
+            throw new common_1.NotFoundException('Hospital not found');
+        }
+        return this.prisma.hospital.update({
+            where: { id: hospitalId },
+            data: { profilePhoto: photoUrl },
+        });
+    }
+    async addImages(hospitalId, uploadResults) {
+        const hospital = await this.prisma.hospital.findUnique({
+            where: { id: hospitalId },
+        });
+        if (!hospital) {
+            throw new common_1.NotFoundException('Hospital not found');
+        }
+        const images = uploadResults.map((result) => ({
+            imageUrl: result.url,
+            hospitalId: hospitalId,
+            isProfilePhoto: false,
+        }));
+        const createdImages = await Promise.all(images.map((image) => this.prisma.institutionImage.create({
+            data: image,
+        })));
+        return createdImages;
+    }
+    async deleteImage(hospitalId, imageId) {
+        const image = await this.prisma.institutionImage.findUnique({
+            where: { id: imageId },
+        });
+        if (!image || image.hospitalId !== hospitalId) {
+            throw new common_1.NotFoundException('Image not found or does not belong to this hospital');
+        }
+        return this.prisma.institutionImage.delete({
+            where: { id: imageId },
+        });
+    }
 };
 exports.HospitalService = HospitalService;
 exports.HospitalService = HospitalService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [hospital_repository_1.HospitalRepository])
+    __metadata("design:paramtypes", [hospital_repository_1.HospitalRepository,
+        database_service_1.DatabaseService])
 ], HospitalService);
 //# sourceMappingURL=hospital.service.js.map

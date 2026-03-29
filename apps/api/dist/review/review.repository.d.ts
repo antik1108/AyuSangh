@@ -1,7 +1,7 @@
 import { BaseRepository } from '../common/repositories/base.repository';
-import { Review } from '@prisma/client';
+import { Review, Prisma } from '@prisma/client';
 import { DatabaseService } from '../database/database.service';
-export declare class ReviewRepository extends BaseRepository<Review> {
+export declare class ReviewRepository extends BaseRepository<Review, Prisma.ReviewCreateInput, Prisma.ReviewUpdateInput> {
     private readonly prisma;
     constructor(prisma: DatabaseService);
     findByHospital(hospitalId: string): Promise<Review[]>;

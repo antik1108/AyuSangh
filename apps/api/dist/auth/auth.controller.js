@@ -31,6 +31,19 @@ let AuthController = class AuthController {
     async login(req, body) {
         return this.authService.login(req.user);
     }
+    async refreshToken(body) {
+        if (!body.refresh_token) {
+            throw new common_1.BadRequestException('refresh_token is required');
+        }
+        return this.authService.refreshAccessToken(body.refresh_token);
+    }
+    async logout(body) {
+        if (!body.refresh_token) {
+            throw new common_1.BadRequestException('refresh_token is required');
+        }
+        await this.authService.logout(body.refresh_token);
+        return { message: 'Logged out successfully' };
+    }
     async registerUser(body) {
         return this.authService.registerUser(body);
     }
@@ -54,6 +67,21 @@ __decorate([
     __metadata("design:paramtypes", [Object, login_dto_1.LoginDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('refresh'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "refreshToken", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('logout'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "logout", null);
 __decorate([
     (0, common_1.Post)('register/user'),
     __param(0, (0, common_1.Body)()),

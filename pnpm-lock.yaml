@@ -191,7 +191,7 @@ importers:
   packages/shared-types:
     dependencies:
       '@prisma/client':
-        specifier: ^6.19.2
+        specifier: ^6.6.0
         version: 6.19.2(prisma@6.19.2(typescript@6.0.2))(typescript@6.0.2)
     devDependencies:
       '@ayusangh/config':

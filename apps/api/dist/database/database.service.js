@@ -9,9 +9,52 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DatabaseService = void 0;
 const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
-let DatabaseService = class DatabaseService extends client_1.PrismaClient {
+let DatabaseService = class DatabaseService {
+    prismaClient = new client_1.PrismaClient();
     async onModuleInit() {
-        await this.$connect();
+        await this.prismaClient.$connect();
+    }
+    async onModuleDestroy() {
+        await this.prismaClient.$disconnect();
+    }
+    get client() {
+        return this.prismaClient;
+    }
+    get user() {
+        return this.prismaClient.user;
+    }
+    get hospital() {
+        return this.prismaClient.hospital;
+    }
+    get doctor() {
+        return this.prismaClient.doctor;
+    }
+    get review() {
+        return this.prismaClient.review;
+    }
+    get refreshToken() {
+        return this.prismaClient.refreshToken;
+    }
+    get favourite() {
+        return this.prismaClient.favourite;
+    }
+    get institutionImage() {
+        return this.prismaClient.institutionImage;
+    }
+    get location() {
+        return this.prismaClient.location;
+    }
+    get communityPost() {
+        return this.prismaClient.communityPost;
+    }
+    get cost() {
+        return this.prismaClient.cost;
+    }
+    get $queryRaw() {
+        return this.prismaClient.$queryRaw.bind(this.prismaClient);
+    }
+    get $transaction() {
+        return this.prismaClient.$transaction.bind(this.prismaClient);
     }
 };
 exports.DatabaseService = DatabaseService;
