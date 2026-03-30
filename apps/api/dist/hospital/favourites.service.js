@@ -34,7 +34,7 @@ let FavouritesService = class FavouritesService {
         });
     }
     async getUserFavourites(userId) {
-        return await this.databaseService.favourite.findMany({
+        return (await this.databaseService.favourite.findMany({
             where: { userId },
             include: {
                 hospital: {
@@ -45,7 +45,7 @@ let FavouritesService = class FavouritesService {
                 },
             },
             orderBy: { addedAt: 'desc' },
-        });
+        }));
     }
     async isFavourite(userId, hospitalId) {
         const favourite = await this.databaseService.favourite.findUnique({

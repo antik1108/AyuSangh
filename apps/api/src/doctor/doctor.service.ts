@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DoctorRepository } from './doctor.repository';
+import { RegisterDoctorDto } from './dto/register-doctor.dto';
 
 @Injectable()
 export class DoctorService {
@@ -13,14 +14,17 @@ export class DoctorService {
     return this.doctorRepo.findById(id);
   }
 
-  async registerDoctor(data: any) {
+  async registerDoctor(dto: RegisterDoctorDto) {
     return this.doctorRepo.create({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      specialization: data.specialization,
-      experienceYears: data.experienceYears,
-      bio: data.bio,
-      user: { connect: { id: data.userId } }
+      firstName:       dto.firstName,
+      lastName:        dto.lastName,
+      specialization:  dto.specialization,
+      experienceYears: dto.experienceYears,
+      bio:             dto.bio,
+      phone:           dto.phone,
+      qualifications:  dto.qualifications ?? [],
+      consultationFee: dto.consultationFee,
+      ...(dto.userId && { user: { connect: { id: dto.userId } } }),
     });
   }
 }

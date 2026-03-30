@@ -1,7 +1,24 @@
 import { DatabaseService } from '../database/database.service';
+import type { Hospital, Doctor, Review, Location } from '@prisma/client';
+export interface HospitalSearchResult extends Hospital {
+    location: Location;
+    reviews: Review[];
+}
+export interface DoctorSearchResult extends Doctor {
+    reviews: Review[];
+    institutions: Array<{
+        id: string;
+        doctorId: string;
+        hospitalId: string;
+        joinedAt: Date;
+        hospital: Hospital & {
+            location: Location;
+        };
+    }>;
+}
 export interface SearchResult {
-    hospital?: any[];
-    doctor?: any[];
+    hospital?: HospitalSearchResult[];
+    doctor?: DoctorSearchResult[];
 }
 interface SearchOptions {
     query: string;
@@ -22,36 +39,7 @@ export declare class AdvancedSearchService {
         maxRating?: number;
         limit?: number;
         offset?: number;
-    }): Promise<({
-        location: {
-            id: string;
-            address: string;
-            city: string;
-            state: string;
-            zipCode: string;
-            country: string;
-            latitude: number | null;
-            longitude: number | null;
-        };
-        reviews: {
-            rating: number;
-        }[];
-    } & {
-        name: string;
-        id: string;
-        description: string | null;
-        institutionType: import("@prisma/client").$Enums.InstitutionType;
-        adminId: string;
-        locationId: string;
-        rating: number | null;
-        isActive: boolean;
-        phone: string | null;
-        website: string | null;
-        email: string | null;
-        profilePhoto: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-    })[]>;
+    }): Promise<HospitalSearchResult[]>;
     advancedDoctorSearch(options: {
         query?: string;
         specialization?: string;
@@ -61,65 +49,17 @@ export declare class AdvancedSearchService {
         institutionId?: string;
         limit?: number;
         offset?: number;
-    }): Promise<({
-        reviews: {
-            rating: number;
-        }[];
-        institutions: ({
-            hospital: {
-                location: {
-                    id: string;
-                    address: string;
-                    city: string;
-                    state: string;
-                    zipCode: string;
-                    country: string;
-                    latitude: number | null;
-                    longitude: number | null;
-                };
-            } & {
-                name: string;
-                id: string;
-                description: string | null;
-                institutionType: import("@prisma/client").$Enums.InstitutionType;
-                adminId: string;
-                locationId: string;
-                rating: number | null;
-                isActive: boolean;
-                phone: string | null;
-                website: string | null;
-                email: string | null;
-                profilePhoto: string | null;
-                createdAt: Date;
-                updatedAt: Date;
-            };
-        } & {
-            id: string;
-            hospitalId: string;
-            doctorId: string;
-            joinedAt: Date;
-        })[];
-    } & {
-        id: string;
-        isActive: boolean;
-        phone: string | null;
-        profilePhoto: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        firstName: string;
-        lastName: string;
-        userId: string | null;
-        specialization: string;
-        experienceYears: number;
-        bio: string | null;
-    })[]>;
+    }): Promise<DoctorSearchResult[]>;
     getTrendingSearches(limit?: number): Promise<string[]>;
     findNearby(options: {
         latitude: number;
         longitude: number;
         radiusKm?: number;
         limit?: number;
-    }): Promise<any[]>;
+    }): Promise<Array<Hospital & {
+        location: Location;
+        distance_km?: number;
+    }>>;
     getHospitalsByFilters(filters: {
         institutionType?: string;
         minBeds?: number;
@@ -130,46 +70,7 @@ export declare class AdvancedSearchService {
         minRating?: number;
         limit?: number;
         offset?: number;
-    }): Promise<({
-        location: {
-            id: string;
-            address: string;
-            city: string;
-            state: string;
-            zipCode: string;
-            country: string;
-            latitude: number | null;
-            longitude: number | null;
-        };
-        reviews: {
-            id: string;
-            rating: number;
-            createdAt: Date;
-            updatedAt: Date;
-            hospitalId: string | null;
-            text: string | null;
-            authorId: string;
-            doctorId: string | null;
-            status: import("@prisma/client").$Enums.ReviewStatus;
-            adminReply: string | null;
-            adminReplyAt: Date | null;
-        }[];
-    } & {
-        name: string;
-        id: string;
-        description: string | null;
-        institutionType: import("@prisma/client").$Enums.InstitutionType;
-        adminId: string;
-        locationId: string;
-        rating: number | null;
-        isActive: boolean;
-        phone: string | null;
-        website: string | null;
-        email: string | null;
-        profilePhoto: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-    })[]>;
+    }): Promise<HospitalSearchResult[]>;
     private _searchHospitals;
     private _searchDoctors;
     private _escapeSearchTerm;

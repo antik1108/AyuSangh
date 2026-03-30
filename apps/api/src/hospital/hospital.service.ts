@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { HospitalRepository } from './hospital.repository';
-import { DatabaseService } from '../database/database.service';
 
 interface UploadResult {
   url: string;
@@ -13,17 +12,10 @@ interface UploadResult {
 
 @Injectable()
 export class HospitalService {
-  constructor(
-    private readonly hospitalRepo: HospitalRepository,
-    private readonly prisma: DatabaseService,
-  ) {}
+  constructor(private readonly hospitalRepo: HospitalRepository) {}
 
   async search(name?: string, city?: string) {
     return this.hospitalRepo.searchHospitals(name, city);
-  }
-
-  getRepo() {
-    return this.hospitalRepo;
   }
 
   async getProfile(id: string) {
@@ -41,69 +33,33 @@ export class HospitalService {
           city: data.city,
           state: data.state,
           zipCode: data.zipCode,
-          country: data.country
-        }
-      }
+          country: data.country,
+        },
+      },
     });
   }
 
   async updateProfilePhoto(hospitalId: string, photoUrl: string) {
-    const hospital = await this.prisma.hospital.findUnique({
-      where: { id: hospitalId },
-    });
-
-    if (!hospital) {
-      throw new NotFoundException('Hospital not found');
-    }
-
-    return this.prisma.hospital.update({
-      where: { id: hospitalId },
-      data: { profilePhoto: photoUrl },
-    });
+    const hospital = await this.hospitalRepo.findById(hospitalId);
+    if (!hospital) throw new NotFoundException('Hospital not found');
+    return this.hospitalRepo.updateProfilePhoto(hospitalId, photoUrl);
   }
 
   async addImages(hospitalId: string, uploadResults: UploadResult[]) {
-    const hospital = await this.prisma.hospital.findUnique({
-      where: { id: hospitalId },
-    });
+    const hospital = await this.hospitalRepo.findById(hospitalId);
+    if (!hospital) throw new NotFoundException('Hospital not found');
 
-    if (!hospital) {
-      throw new NotFoundException('Hospital not found');
-    }
-
-    // Save images to database
-    const images = uploadResults.map((result) => ({
-      imageUrl: result.url,
-      hospitalId: hospitalId,
-      isProfilePhoto: false,
-    }));
-
-    // Create institution images in database
-    const createdImages = await Promise.all(
-      images.map((image) =>
-        this.prisma.institutionImage.create({
-          data: image,
-        }),
-      ),
+    return this.hospitalRepo.addImages(
+      hospitalId,
+      uploadResults.map((r) => ({ imageUrl: r.url, isProfilePhoto: false })),
     );
-
-    return createdImages;
   }
 
   async deleteImage(hospitalId: string, imageId: string) {
-    const image = await this.prisma.institutionImage.findUnique({
-      where: { id: imageId },
-    });
-
+    const image = await this.hospitalRepo.findImage(imageId);
     if (!image || image.hospitalId !== hospitalId) {
       throw new NotFoundException('Image not found or does not belong to this hospital');
     }
-
-    // Delete from Cloudinary if public ID exists
-    // (integration with CloudinaryService.deleteImage can be added)
-
-    return this.prisma.institutionImage.delete({
-      where: { id: imageId },
-    });
+    return this.hospitalRepo.deleteImage(imageId);
   }
 }

@@ -1,6 +1,7 @@
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from '../database/database.service';
+import { RefreshToken } from '@prisma/client';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { RegisterHospitalDto } from './dto/register-hospital.dto';
 import { AuthenticatedUser, LoginResponse, RefreshTokenResponse } from './types';
@@ -15,14 +16,7 @@ export declare class AuthService {
     login(user: AuthenticatedUser): Promise<LoginResponse>;
     refreshAccessToken(refreshToken: string): Promise<RefreshTokenResponse>;
     logout(refreshToken: string): Promise<void>;
-    validateRefreshToken(refreshToken: string): Promise<{
-        id: string;
-        createdAt: Date;
-        token: string;
-        userEmail: string;
-        expiresAt: Date;
-        revokedAt: Date | null;
-    }>;
+    validateRefreshToken(refreshToken: string): Promise<RefreshToken>;
     registerUser(data: RegisterUserDto): Promise<{
         id: string;
         email: string;
@@ -44,4 +38,5 @@ export declare class AuthService {
         };
     }>;
     private _generateRandomToken;
+    private _validateTokenRecord;
 }

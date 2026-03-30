@@ -15,6 +15,10 @@ export declare class HospitalService {
     search(name?: string, city?: string): Promise<{
         name: string;
         id: string;
+        email: string | null;
+        profilePhoto: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         description: string | null;
         institutionType: import("@prisma/client").$Enums.InstitutionType;
         adminId: string;
@@ -23,15 +27,15 @@ export declare class HospitalService {
         isActive: boolean;
         phone: string | null;
         website: string | null;
-        email: string | null;
-        profilePhoto: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     }[]>;
     getRepo(): HospitalRepository;
     getProfile(id: string): Promise<{
         name: string;
         id: string;
+        email: string | null;
+        profilePhoto: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         description: string | null;
         institutionType: import("@prisma/client").$Enums.InstitutionType;
         adminId: string;
@@ -40,14 +44,14 @@ export declare class HospitalService {
         isActive: boolean;
         phone: string | null;
         website: string | null;
-        email: string | null;
-        profilePhoto: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     } | null>;
     registerHospital(data: any): Promise<{
         name: string;
         id: string;
+        email: string | null;
+        profilePhoto: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         description: string | null;
         institutionType: import("@prisma/client").$Enums.InstitutionType;
         adminId: string;
@@ -56,14 +60,14 @@ export declare class HospitalService {
         isActive: boolean;
         phone: string | null;
         website: string | null;
-        email: string | null;
-        profilePhoto: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     updateProfilePhoto(hospitalId: string, photoUrl: string): Promise<{
         name: string;
         id: string;
+        email: string | null;
+        profilePhoto: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         description: string | null;
         institutionType: import("@prisma/client").$Enums.InstitutionType;
         adminId: string;
@@ -72,26 +76,22 @@ export declare class HospitalService {
         isActive: boolean;
         phone: string | null;
         website: string | null;
-        email: string | null;
-        profilePhoto: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     addImages(hospitalId: string, uploadResults: UploadResult[]): Promise<{
         id: string;
+        hospitalId: string;
         imageUrl: string;
         altText: string | null;
         isProfilePhoto: boolean;
         uploadedAt: Date;
-        hospitalId: string;
     }[]>;
     deleteImage(hospitalId: string, imageId: string): Promise<{
         id: string;
+        hospitalId: string;
         imageUrl: string;
         altText: string | null;
         isProfilePhoto: boolean;
         uploadedAt: Date;
-        hospitalId: string;
     }>;
 }
 export {};

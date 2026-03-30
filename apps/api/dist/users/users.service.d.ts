@@ -5,30 +5,30 @@ export declare class UsersService {
     private prisma;
     constructor(prisma: DatabaseService);
     findOneByEmail(email: string): Promise<{
-        refreshToken: string | null;
         id: string;
         email: string;
-        profilePhoto: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         passwordHash: string;
+        refreshToken: string | null;
         refreshTokenExpiresAt: Date | null;
         role: import("@prisma/client").$Enums.Role;
         firstName: string | null;
         lastName: string | null;
+        profilePhoto: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     } | null>;
     findOneById(id: string): Promise<{
-        refreshToken: string | null;
         id: string;
         email: string;
-        profilePhoto: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         passwordHash: string;
+        refreshToken: string | null;
         refreshTokenExpiresAt: Date | null;
         role: import("@prisma/client").$Enums.Role;
         firstName: string | null;
         lastName: string | null;
+        profilePhoto: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     } | null>;
     createPatient(data: RegisterUserDto): Promise<{
         id: string;

@@ -21,7 +21,7 @@ type SearchDoctor = {
 };
 
 export default function Home() {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

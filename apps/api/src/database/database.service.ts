@@ -14,7 +14,11 @@ import { PrismaClient } from '@prisma/client';
  */
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
-  private readonly prismaClient = new PrismaClient();
+  private readonly prismaClient: PrismaClient;
+
+  constructor() {
+    this.prismaClient = new PrismaClient();
+  }
 
   /**
    * Lifecycle hook - established database connection on module initialization
@@ -43,43 +47,73 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   // Exposing model accessors with full type support
   // ============================================================
 
-  get user() {
+  /**
+   * User model delegate - fully typed access to user operations
+   */
+  get user(): PrismaClient['user'] {
     return this.prismaClient.user;
   }
 
-  get hospital() {
+  /**
+   * Hospital model delegate - fully typed access to hospital operations
+   */
+  get hospital(): PrismaClient['hospital'] {
     return this.prismaClient.hospital;
   }
 
-  get doctor() {
+  /**
+   * Doctor model delegate - fully typed access to doctor operations
+   */
+  get doctor(): PrismaClient['doctor'] {
     return this.prismaClient.doctor;
   }
 
-  get review() {
+  /**
+   * Review model delegate - fully typed access to review operations
+   */
+  get review(): PrismaClient['review'] {
     return this.prismaClient.review;
   }
 
-  get refreshToken() {
+  /**
+   * RefreshToken model delegate - fully typed access to refresh token operations
+   */
+  get refreshToken(): PrismaClient['refreshToken'] {
     return this.prismaClient.refreshToken;
   }
 
-  get favourite() {
+  /**
+   * Favourite model delegate - fully typed access to favourite operations
+   */
+  get favourite(): PrismaClient['favourite'] {
     return this.prismaClient.favourite;
   }
 
-  get institutionImage() {
+  /**
+   * InstitutionImage model delegate - fully typed access to institution image operations
+   */
+  get institutionImage(): PrismaClient['institutionImage'] {
     return this.prismaClient.institutionImage;
   }
 
-  get location() {
+  /**
+   * Location model delegate - fully typed access to location operations
+   */
+  get location(): PrismaClient['location'] {
     return this.prismaClient.location;
   }
 
-  get communityPost() {
+  /**
+   * CommunityPost model delegate - fully typed access to community post operations
+   */
+  get communityPost(): PrismaClient['communityPost'] {
     return this.prismaClient.communityPost;
   }
 
-  get cost() {
+  /**
+   * Cost model delegate - fully typed access to cost operations
+   */
+  get cost(): PrismaClient['cost'] {
     return this.prismaClient.cost;
   }
 
@@ -92,7 +126,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
    * @example
    * const result = await this.database.$queryRaw`SELECT ...`
    */
-  get $queryRaw() {
+  get $queryRaw(): PrismaClient['$queryRaw'] {
     return this.prismaClient.$queryRaw.bind(this.prismaClient);
   }
 
@@ -101,7 +135,8 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
    * @example
    * await this.database.$transaction(async (tx) => { ... })
    */
-  get $transaction() {
+  get $transaction(): PrismaClient['$transaction'] {
     return this.prismaClient.$transaction.bind(this.prismaClient);
   }
 }
+

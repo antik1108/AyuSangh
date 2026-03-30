@@ -1,6 +1,10 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { SearchService } from './search.service';
 import { AdvancedSearchService, type SearchResult } from './advanced-search.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '@prisma/client';
 
 @Controller('search')
 export class SearchController {
@@ -115,5 +119,12 @@ export class SearchController {
     return this.advancedSearchService.getTrendingSearches(
       Math.min(limit, 50),
     );
+  }
+
+  @Post('cleanup-test-data')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.PLATFORM_ADMIN)
+  cleanupTestData() {
+    return this.searchService.cleanupTestData();
   }
 }

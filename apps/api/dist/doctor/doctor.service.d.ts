@@ -4,13 +4,13 @@ export declare class DoctorService {
     constructor(doctorRepo: DoctorRepository);
     search(specialization?: string): Promise<{
         id: string;
-        isActive: boolean;
-        phone: string | null;
+        firstName: string;
+        lastName: string;
         profilePhoto: string | null;
         createdAt: Date;
         updatedAt: Date;
-        firstName: string;
-        lastName: string;
+        isActive: boolean;
+        phone: string | null;
         userId: string | null;
         specialization: string;
         experienceYears: number;
@@ -18,13 +18,13 @@ export declare class DoctorService {
     }[]>;
     getProfile(id: string): Promise<{
         id: string;
-        isActive: boolean;
-        phone: string | null;
+        firstName: string;
+        lastName: string;
         profilePhoto: string | null;
         createdAt: Date;
         updatedAt: Date;
-        firstName: string;
-        lastName: string;
+        isActive: boolean;
+        phone: string | null;
         userId: string | null;
         specialization: string;
         experienceYears: number;
@@ -32,13 +32,13 @@ export declare class DoctorService {
     } | null>;
     registerDoctor(data: any): Promise<{
         id: string;
-        isActive: boolean;
-        phone: string | null;
+        firstName: string;
+        lastName: string;
         profilePhoto: string | null;
         createdAt: Date;
         updatedAt: Date;
-        firstName: string;
-        lastName: string;
+        isActive: boolean;
+        phone: string | null;
         userId: string | null;
         specialization: string;
         experienceYears: number;

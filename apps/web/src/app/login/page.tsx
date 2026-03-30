@@ -8,7 +8,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 export default function LoginPage() {
   const router = useRouter();
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',

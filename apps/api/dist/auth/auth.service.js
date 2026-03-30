@@ -100,11 +100,10 @@ let AuthService = class AuthService {
         const tokenRecord = await this.databaseService.refreshToken.findUnique({
             where: { token: refreshToken },
         });
-        if (!tokenRecord ||
-            tokenRecord.expiresAt < new Date() ||
-            tokenRecord.revokedAt !== null) {
-            throw new common_1.UnauthorizedException('Invalid or expired refresh token');
+        if (!tokenRecord) {
+            throw new common_1.UnauthorizedException('Refresh token not found');
         }
+        this._validateTokenRecord(tokenRecord);
         const user = await this.usersService.findOneByEmail(tokenRecord.userEmail);
         if (!user) {
             throw new common_1.UnauthorizedException('User not found');
@@ -130,15 +129,7 @@ let AuthService = class AuthService {
         const tokenRecord = await this.databaseService.refreshToken.findUnique({
             where: { token: refreshToken },
         });
-        if (!tokenRecord) {
-            throw new common_1.UnauthorizedException('Refresh token not found');
-        }
-        if (tokenRecord.expiresAt < new Date()) {
-            throw new common_1.UnauthorizedException('Refresh token has expired');
-        }
-        if (tokenRecord.revokedAt !== null) {
-            throw new common_1.UnauthorizedException('Refresh token has been revoked');
-        }
+        this._validateTokenRecord(tokenRecord);
         return tokenRecord;
     }
     async registerUser(data) {
@@ -149,6 +140,14 @@ let AuthService = class AuthService {
     }
     _generateRandomToken() {
         return crypto.randomBytes(32).toString('hex');
+    }
+    _validateTokenRecord(tokenRecord) {
+        if (tokenRecord.expiresAt < new Date()) {
+            throw new common_1.UnauthorizedException('Refresh token has expired');
+        }
+        if (tokenRecord.revokedAt !== null) {
+            throw new common_1.UnauthorizedException('Refresh token has been revoked');
+        }
     }
 };
 exports.AuthService = AuthService;

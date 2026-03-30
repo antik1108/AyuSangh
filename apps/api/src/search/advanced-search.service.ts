@@ -1,16 +1,68 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
+import type {
+  Prisma,
+  Hospital,
+  Doctor,
+  Review,
+  Location,
+  InstitutionType,
+} from '@prisma/client';
 
-export interface SearchResult {
-  hospital?: any[];
-  doctor?: any[];
+/**
+ * Complete hospital with relations for search results
+ */
+export interface HospitalSearchResult extends Hospital {
+  location: Location;
+  reviews: Review[];
 }
 
+/**
+ * Complete doctor with relations for search results
+ */
+export interface DoctorSearchResult extends Doctor {
+  reviews: Review[];
+  institutions: Array<{
+    id: string;
+    doctorId: string;
+    hospitalId: string;
+    joinedAt: Date;
+    hospital: Hospital & { location: Location };
+  }>;
+}
+
+/**
+ * Combined search results
+ */
+export interface SearchResult {
+  hospital?: HospitalSearchResult[];
+  doctor?: DoctorSearchResult[];
+}
+
+/**
+ * Configuration for general search
+ */
 interface SearchOptions {
   query: string;
   type?: 'hospital' | 'doctor' | 'all';
   limit?: number;
   offset?: number;
+}
+
+/**
+ * Validation helper for InstitutionType enum
+ */
+function isValidInstitutionType(
+  value: string | undefined,
+): value is InstitutionType {
+  if (!value) return false;
+  const validTypes: InstitutionType[] = [
+    'HOSPITAL',
+    'CLINIC',
+    'DIAGNOSTIC_CENTRE',
+    'NURSING_HOME',
+  ];
+  return validTypes.includes(value as InstitutionType);
 }
 
 @Injectable()
@@ -39,7 +91,7 @@ export class AdvancedSearchService {
   }
 
   /**
-   * Search hospitals with FTS and filtering
+   * Search hospitals with advanced filtering
    */
   async advancedHospitalSearch(options: {
     query?: string;
@@ -50,7 +102,7 @@ export class AdvancedSearchService {
     maxRating?: number;
     limit?: number;
     offset?: number;
-  }) {
+  }): Promise<HospitalSearchResult[]> {
     const {
       query,
       institutionType,
@@ -62,39 +114,44 @@ export class AdvancedSearchService {
       offset = 0,
     } = options;
 
-    // Build dynamic where clause
-    const where: Record<string, any> = {};
+    // Build dynamic where clause with proper typing
+    const where: Prisma.HospitalWhereInput = {};
 
-    if (institutionType) {
+    // Validate and set institution type if provided
+    if (institutionType && isValidInstitutionType(institutionType)) {
       where.institutionType = institutionType;
     }
 
-    if (city) {
-      where.location = { city: { contains: city, mode: 'insensitive' } };
-    }
-
-    if (state) {
-      if (where.location) {
-        (where.location as Record<string, any>).state = {
+    // Add location filters
+    if (city || state) {
+      where.location = {};
+      if (city) {
+        (where.location as Prisma.LocationWhereInput).city = {
+          contains: city,
+          mode: 'insensitive',
+        };
+      }
+      if (state) {
+        (where.location as Prisma.LocationWhereInput).state = {
           contains: state,
           mode: 'insensitive',
         };
-      } else {
-        where.location = { state: { contains: state, mode: 'insensitive' } };
       }
     }
 
+    // Add rating filters
     if (minRating !== undefined || maxRating !== undefined) {
-      where.rating = {};
+      const ratingFilter: Prisma.FloatFilter = {};
       if (minRating !== undefined) {
-        (where.rating as Record<string, any>).gte = minRating;
+        ratingFilter.gte = minRating;
       }
       if (maxRating !== undefined) {
-        (where.rating as Record<string, any>).lte = maxRating;
+        ratingFilter.lte = maxRating;
       }
+      where.rating = ratingFilter;
     }
 
-    // Basic text search if query provided
+    // Add text search
     if (query) {
       where.OR = [
         { name: { contains: query, mode: 'insensitive' } },
@@ -102,20 +159,22 @@ export class AdvancedSearchService {
       ];
     }
 
-    return this.databaseService.hospital.findMany({
-      where: where as any,
+    const hospitals = await this.databaseService.hospital.findMany({
+      where,
       include: {
         location: true,
-        reviews: { select: { rating: true } },
+        reviews: { select: { ratingOverall: true, ratingCleanliness: true, ratingStaffBehaviour: true, ratingWaitTime: true } },
       },
       take: limit,
       skip: offset,
       orderBy: { createdAt: 'desc' },
     });
+
+    return hospitals as HospitalSearchResult[];
   }
 
   /**
-   * Search doctors with enhanced filtering
+   * Search doctors with advanced filtering
    */
   async advancedDoctorSearch(options: {
     query?: string;
@@ -126,7 +185,7 @@ export class AdvancedSearchService {
     institutionId?: string;
     limit?: number;
     offset?: number;
-  }) {
+  }): Promise<DoctorSearchResult[]> {
     const {
       query,
       specialization,
@@ -138,7 +197,7 @@ export class AdvancedSearchService {
       offset = 0,
     } = options;
 
-    const where: Record<string, any> = {};
+    const where: Prisma.DoctorWhereInput = {};
 
     if (specialization) {
       where.specialization = {
@@ -148,7 +207,7 @@ export class AdvancedSearchService {
     }
 
     if (institutionId) {
-      (where as Record<string, any>).institutions = {
+      where.institutions = {
         some: { hospitalId: institutionId },
       };
     }
@@ -163,9 +222,9 @@ export class AdvancedSearchService {
     }
 
     const doctors = await this.databaseService.doctor.findMany({
-      where: where as any,
+      where,
       include: {
-        reviews: { select: { rating: true } },
+        reviews: { select: { ratingOverall: true, ratingCleanliness: true, ratingStaffBehaviour: true, ratingWaitTime: true } },
         institutions: {
           include: { hospital: { include: { location: true } } },
         },
@@ -176,29 +235,31 @@ export class AdvancedSearchService {
 
     // Filter by city and rating if specified
     if (!city && minRating === undefined && maxRating === undefined) {
-      return doctors;
+      return doctors as DoctorSearchResult[];
     }
 
-    return doctors.filter((doctor: any) => {
+    return doctors.filter((doctor) => {
       // Check city filter
       if (city) {
-        const hasCity = (doctor as any).institutions.some((di: any) =>
-          di.hospital.location.city.toLowerCase().includes(city.toLowerCase()),
-        );
+        const hasCity = (doctor as DoctorSearchResult).institutions.some((di) => {
+          const doctorCity = di.hospital.location?.city ?? '';
+          return doctorCity.toLowerCase().includes(city.toLowerCase());
+        });
         if (!hasCity) return false;
       }
 
       // Check rating filters
-      if (doctor.reviews.length > 0) {
+      const d = doctor as DoctorSearchResult;
+      if (d.reviews && d.reviews.length > 0) {
         const avgRating =
-          (doctor.reviews as any[]).reduce((sum, r: any) => sum + r.rating, 0) /
-          doctor.reviews.length;
+          d.reviews.reduce((sum: number, r) => sum + (r.ratingOverall ?? 0), 0) /
+          d.reviews.length;
         if (minRating !== undefined && avgRating < minRating) return false;
         if (maxRating !== undefined && avgRating > maxRating) return false;
       }
 
       return true;
-    });
+    }) as DoctorSearchResult[];
   }
 
   /**
@@ -224,31 +285,45 @@ export class AdvancedSearchService {
     longitude: number;
     radiusKm?: number;
     limit?: number;
-  }) {
+  }): Promise<Array<Hospital & { location: Location; distance_km?: number }>> {
     const { latitude, longitude, radiusKm = 5, limit = 20 } = options;
 
     // Using Haversine formula approximation for PostgreSQL
     // Distance formula: sqrt((lat2-lat1)² + (lng2-lng1)²) * 111 (approx km conversion)
-    const hospitals = await this.databaseService.$queryRaw<any[]>`
+    const hospitals = await this.databaseService.$queryRaw<
+      Array<Hospital & { location: Location; distance_km: number }>
+    >`
       SELECT 
         h.id,
         h.name,
         h."institutionType",
         h.rating,
+        h."adminId",
+        h."locationId",
+        h.phone,
+        h.website,
+        h.email,
+        h."profilePhoto",
+        h."isActive",
+        h."createdAt",
+        h."updatedAt",
+        l.id as location_id,
         l.address,
         l.city,
         l.state,
+        l."zipCode",
+        l.country,
         l.latitude,
         l.longitude,
         SQRT(
-          POWER(l.latitude - ${latitude}, 2) + 
-          POWER(l.longitude - ${longitude}, 2)
+          POWER(CAST(l.latitude AS float) - ${latitude}, 2) + 
+          POWER(CAST(l.longitude AS float) - ${longitude}, 2)
         ) * 111 AS distance_km
       FROM "Hospital" h
       JOIN "Location" l ON h."locationId" = l.id
       WHERE SQRT(
-        POWER(l.latitude - ${latitude}, 2) + 
-        POWER(l.longitude - ${longitude}, 2)
+        POWER(CAST(l.latitude AS float) - ${latitude}, 2) + 
+        POWER(CAST(l.longitude AS float) - ${longitude}, 2)
       ) * 111 <= ${radiusKm}
       ORDER BY distance_km ASC
       LIMIT ${limit}
@@ -270,7 +345,7 @@ export class AdvancedSearchService {
     minRating?: number;
     limit?: number;
     offset?: number;
-  }) {
+  }): Promise<HospitalSearchResult[]> {
     const {
       institutionType,
       city,
@@ -280,34 +355,37 @@ export class AdvancedSearchService {
       offset = 0,
     } = filters;
 
-    const where: Record<string, any> = {};
+    const where: Prisma.HospitalWhereInput = {};
 
-    if (institutionType) {
+    // Validate institution type if provided
+    if (institutionType && isValidInstitutionType(institutionType)) {
       where.institutionType = institutionType;
     }
 
+    // Add location filters
     if (city || state) {
       where.location = {};
       if (city) {
-        (where.location as Record<string, any>).city = {
+        (where.location as Prisma.LocationWhereInput).city = {
           contains: city,
           mode: 'insensitive',
         };
       }
       if (state) {
-        (where.location as Record<string, any>).state = {
+        (where.location as Prisma.LocationWhereInput).state = {
           contains: state,
           mode: 'insensitive',
         };
       }
     }
 
+    // Add minimum rating filter
     if (minRating !== undefined) {
       where.rating = { gte: minRating };
     }
 
-    return this.databaseService.hospital.findMany({
-      where: where as any,
+    const hospitals = await this.databaseService.hospital.findMany({
+      where,
       include: {
         location: true,
         reviews: true,
@@ -316,18 +394,23 @@ export class AdvancedSearchService {
       skip: offset,
       orderBy: { createdAt: 'desc' },
     });
+
+    return hospitals as HospitalSearchResult[];
   }
 
   /**
    * Private helper methods
    */
 
+  /**
+   * Search hospitals with FTS
+   */
   private async _searchHospitals(
     searchTerm: string,
     limit: number,
     offset: number,
-  ) {
-    return this.databaseService.hospital.findMany({
+  ): Promise<HospitalSearchResult[]> {
+    const hospitals = await this.databaseService.hospital.findMany({
       where: {
         OR: [
           { name: { contains: searchTerm, mode: 'insensitive' } },
@@ -336,20 +419,25 @@ export class AdvancedSearchService {
       },
       include: {
         location: true,
-        reviews: { select: { rating: true } },
+        reviews: { select: { ratingOverall: true, ratingCleanliness: true, ratingStaffBehaviour: true, ratingWaitTime: true } },
       },
       take: limit,
       skip: offset,
       orderBy: { createdAt: 'desc' },
-    } as any);
+    });
+
+    return hospitals as HospitalSearchResult[];
   }
 
+  /**
+   * Search doctors with FTS
+   */
   private async _searchDoctors(
     searchTerm: string,
     limit: number,
     offset: number,
-  ) {
-    return this.databaseService.doctor.findMany({
+  ): Promise<DoctorSearchResult[]> {
+    const doctors = await this.databaseService.doctor.findMany({
       where: {
         OR: [
           { firstName: { contains: searchTerm, mode: 'insensitive' } },
@@ -359,18 +447,22 @@ export class AdvancedSearchService {
         ],
       },
       include: {
-        reviews: { select: { rating: true } },
+        reviews: { select: { ratingOverall: true, ratingCleanliness: true, ratingStaffBehaviour: true, ratingWaitTime: true } },
         institutions: {
           include: { hospital: { include: { location: true } } },
         },
       },
       take: limit,
       skip: offset,
-    } as any);
+    });
+
+    return doctors as DoctorSearchResult[];
   }
 
+  /**
+   * Escape special characters for PostgreSQL FTS
+   */
   private _escapeSearchTerm(term: string): string {
-    // Escape special characters for PostgreSQL FTS
     return term.replace(/[&|!()'"<>*]/g, '\\$&').trim();
   }
 }

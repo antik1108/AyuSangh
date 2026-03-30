@@ -8,7 +8,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 export default function RegisterHospitalPage() {
   const router = useRouter();
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -63,8 +63,8 @@ export default function RegisterHospitalPage() {
 
       toast.success('Hospital registered successfully! Please login.');
       setTimeout(() => router.push('/login'), 2000);
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Registration failed');
       setLoading(false);
     }
   };

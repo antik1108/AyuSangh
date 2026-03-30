@@ -42,6 +42,13 @@ export class HospitalController {
     return this.hospitalService.search(name, city);
   }
 
+  // Static routes must come before parameterized routes to avoid shadowing
+  @Get('user/favourites')
+  @UseGuards(JwtAuthGuard)
+  async getUserFavourites(@Request() req: RequestWithUser) {
+    return this.favouritesService.getUserFavourites(req.user.userId);
+  }
+
   @Get(':id')
   getHospital(@Param('id') id: string) {
     return this.hospitalService.getProfile(id);
@@ -174,12 +181,6 @@ export class HospitalController {
       hospitalId,
     );
     return { message: 'Removed from favourites' };
-  }
-
-  @Get('user/favourites')
-  @UseGuards(JwtAuthGuard)
-  async getUserFavourites(@Request() req: RequestWithUser) {
-    return this.favouritesService.getUserFavourites(req.user.userId);
   }
 
   @Get(':hospitalId/is-favourite')

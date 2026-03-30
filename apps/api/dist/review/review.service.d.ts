@@ -9,12 +9,12 @@ export declare class ReviewService {
     constructor(reviewRepo: ReviewRepository, ratingStrategy: DefaultRatingStrategy, databaseService: DatabaseService);
     submitReview(userId: string, data: SubmitReviewDto): Promise<{
         id: string;
-        rating: number;
         createdAt: Date;
         updatedAt: Date;
-        hospitalId: string | null;
+        rating: number;
         text: string | null;
         authorId: string;
+        hospitalId: string | null;
         doctorId: string | null;
         status: import("@prisma/client").$Enums.ReviewStatus;
         adminReply: string | null;
@@ -23,12 +23,12 @@ export declare class ReviewService {
     getHospitalReviews(hospitalId: string): Promise<{
         reviews: {
             id: string;
-            rating: number;
             createdAt: Date;
             updatedAt: Date;
-            hospitalId: string | null;
+            rating: number;
             text: string | null;
             authorId: string;
+            hospitalId: string | null;
             doctorId: string | null;
             status: import("@prisma/client").$Enums.ReviewStatus;
             adminReply: string | null;
@@ -40,12 +40,12 @@ export declare class ReviewService {
     getDoctorReviews(doctorId: string): Promise<{
         reviews: {
             id: string;
-            rating: number;
             createdAt: Date;
             updatedAt: Date;
-            hospitalId: string | null;
+            rating: number;
             text: string | null;
             authorId: string;
+            hospitalId: string | null;
             doctorId: string | null;
             status: import("@prisma/client").$Enums.ReviewStatus;
             adminReply: string | null;
@@ -62,12 +62,12 @@ export declare class ReviewService {
         text?: string;
     }): Promise<{
         id: string;
-        rating: number;
         createdAt: Date;
         updatedAt: Date;
-        hospitalId: string | null;
+        rating: number;
         text: string | null;
         authorId: string;
+        hospitalId: string | null;
         doctorId: string | null;
         status: import("@prisma/client").$Enums.ReviewStatus;
         adminReply: string | null;
@@ -75,12 +75,12 @@ export declare class ReviewService {
     }>;
     approveReview(reviewId: string): Promise<{
         id: string;
-        rating: number;
         createdAt: Date;
         updatedAt: Date;
-        hospitalId: string | null;
+        rating: number;
         text: string | null;
         authorId: string;
+        hospitalId: string | null;
         doctorId: string | null;
         status: import("@prisma/client").$Enums.ReviewStatus;
         adminReply: string | null;
@@ -88,12 +88,12 @@ export declare class ReviewService {
     }>;
     rejectReview(reviewId: string): Promise<{
         id: string;
-        rating: number;
         createdAt: Date;
         updatedAt: Date;
-        hospitalId: string | null;
+        rating: number;
         text: string | null;
         authorId: string;
+        hospitalId: string | null;
         doctorId: string | null;
         status: import("@prisma/client").$Enums.ReviewStatus;
         adminReply: string | null;
@@ -101,12 +101,12 @@ export declare class ReviewService {
     }>;
     replyToReview(reviewId: string, replyText: string): Promise<{
         id: string;
-        rating: number;
         createdAt: Date;
         updatedAt: Date;
-        hospitalId: string | null;
+        rating: number;
         text: string | null;
         authorId: string;
+        hospitalId: string | null;
         doctorId: string | null;
         status: import("@prisma/client").$Enums.ReviewStatus;
         adminReply: string | null;
@@ -130,12 +130,12 @@ export declare class ReviewService {
         };
     } & {
         id: string;
-        rating: number;
         createdAt: Date;
         updatedAt: Date;
-        hospitalId: string | null;
+        rating: number;
         text: string | null;
         authorId: string;
+        hospitalId: string | null;
         doctorId: string | null;
         status: import("@prisma/client").$Enums.ReviewStatus;
         adminReply: string | null;

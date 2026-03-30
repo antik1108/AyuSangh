@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from '../database/database.service';
+import { RefreshToken } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -15,7 +16,6 @@ import {
 @Injectable()
 export class AuthService {
   private readonly accessTokenExpiry = '8h';
-  private readonly refreshTokenExpiry = '7d';
 
   constructor(
     private usersService: UsersService,
@@ -90,13 +90,11 @@ export class AuthService {
       where: { token: refreshToken },
     });
 
-    if (
-      !tokenRecord ||
-      tokenRecord.expiresAt < new Date() ||
-      tokenRecord.revokedAt !== null
-    ) {
-      throw new UnauthorizedException('Invalid or expired refresh token');
+    if (!tokenRecord) {
+      throw new UnauthorizedException('Refresh token not found');
     }
+
+    this._validateTokenRecord(tokenRecord);
 
     // Get user
     const user = await this.usersService.findOneByEmail(tokenRecord.userEmail);
@@ -131,7 +129,7 @@ export class AuthService {
   /**
    * Validate refresh token is valid and not expired
    */
-  async validateRefreshToken(refreshToken: string) {
+  async validateRefreshToken(refreshToken: string): Promise<RefreshToken> {
     const tokenRecord = await this.databaseService.refreshToken.findUnique({
       where: { token: refreshToken },
     });
@@ -140,21 +138,20 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token not found');
     }
 
-    if (tokenRecord.expiresAt < new Date()) {
-      throw new UnauthorizedException('Refresh token has expired');
-    }
-
-    if (tokenRecord.revokedAt !== null) {
-      throw new UnauthorizedException('Refresh token has been revoked');
-    }
-
+    this._validateTokenRecord(tokenRecord);
     return tokenRecord;
   }
 
+  /**
+   * Register a new patient user
+   */
   async registerUser(data: RegisterUserDto) {
     return this.usersService.createPatient(data);
   }
 
+  /**
+   * Register a new hospital admin user
+   */
   async registerHospital(data: RegisterHospitalDto) {
     return this.usersService.createHospitalAdmin(data);
   }
@@ -164,5 +161,18 @@ export class AuthService {
    */
   private _generateRandomToken(): string {
     return crypto.randomBytes(32).toString('hex');
+  }
+
+  /**
+   * Validate refresh token record - extracted for reusability
+   */
+  private _validateTokenRecord(tokenRecord: RefreshToken): void {
+    if (tokenRecord.expiresAt < new Date()) {
+      throw new UnauthorizedException('Refresh token has expired');
+    }
+
+    if (tokenRecord.revokedAt !== null) {
+      throw new UnauthorizedException('Refresh token has been revoked');
+    }
   }
 }

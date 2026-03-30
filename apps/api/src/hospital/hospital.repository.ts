@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../common/repositories/base.repository';
-import { Hospital, Prisma } from '@prisma/client';
+import { Hospital, InstitutionImage, Prisma } from '@prisma/client';
 import { DatabaseService } from '../database/database.service';
 
 @Injectable()
@@ -30,7 +30,35 @@ export class HospitalRepository extends BaseRepository<
         location: true,
         departments: true,
         accreditations: true,
-      }
+      },
     });
+  }
+
+  async updateProfilePhoto(hospitalId: string, photoUrl: string): Promise<Hospital> {
+    return this.prisma.hospital.update({
+      where: { id: hospitalId },
+      data: { profilePhoto: photoUrl },
+    });
+  }
+
+  async addImages(
+    hospitalId: string,
+    images: Array<{ imageUrl: string; isProfilePhoto: boolean }>,
+  ): Promise<InstitutionImage[]> {
+    return Promise.all(
+      images.map((image) =>
+        this.prisma.institutionImage.create({
+          data: { ...image, hospitalId },
+        }),
+      ),
+    );
+  }
+
+  async findImage(imageId: string): Promise<InstitutionImage | null> {
+    return this.prisma.institutionImage.findUnique({ where: { id: imageId } });
+  }
+
+  async deleteImage(imageId: string): Promise<InstitutionImage> {
+    return this.prisma.institutionImage.delete({ where: { id: imageId } });
   }
 }

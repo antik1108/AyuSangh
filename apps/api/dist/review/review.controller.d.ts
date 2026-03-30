@@ -13,12 +13,12 @@ export declare class ReviewController {
     getHospitalReviews(id: string): Promise<{
         reviews: {
             id: string;
-            rating: number;
             createdAt: Date;
             updatedAt: Date;
-            hospitalId: string | null;
+            rating: number;
             text: string | null;
             authorId: string;
+            hospitalId: string | null;
             doctorId: string | null;
             status: import("@prisma/client").$Enums.ReviewStatus;
             adminReply: string | null;
@@ -30,12 +30,12 @@ export declare class ReviewController {
     getDoctorReviews(id: string): Promise<{
         reviews: {
             id: string;
-            rating: number;
             createdAt: Date;
             updatedAt: Date;
-            hospitalId: string | null;
+            rating: number;
             text: string | null;
             authorId: string;
+            hospitalId: string | null;
             doctorId: string | null;
             status: import("@prisma/client").$Enums.ReviewStatus;
             adminReply: string | null;
@@ -62,12 +62,12 @@ export declare class ReviewController {
         };
     } & {
         id: string;
-        rating: number;
         createdAt: Date;
         updatedAt: Date;
-        hospitalId: string | null;
+        rating: number;
         text: string | null;
         authorId: string;
+        hospitalId: string | null;
         doctorId: string | null;
         status: import("@prisma/client").$Enums.ReviewStatus;
         adminReply: string | null;
@@ -75,12 +75,12 @@ export declare class ReviewController {
     })[]>;
     submitReview(req: RequestWithUser, data: SubmitReviewDto): Promise<{
         id: string;
-        rating: number;
         createdAt: Date;
         updatedAt: Date;
-        hospitalId: string | null;
+        rating: number;
         text: string | null;
         authorId: string;
+        hospitalId: string | null;
         doctorId: string | null;
         status: import("@prisma/client").$Enums.ReviewStatus;
         adminReply: string | null;
@@ -91,12 +91,12 @@ export declare class ReviewController {
         text?: string;
     }): Promise<{
         id: string;
-        rating: number;
         createdAt: Date;
         updatedAt: Date;
-        hospitalId: string | null;
+        rating: number;
         text: string | null;
         authorId: string;
+        hospitalId: string | null;
         doctorId: string | null;
         status: import("@prisma/client").$Enums.ReviewStatus;
         adminReply: string | null;
@@ -107,12 +107,12 @@ export declare class ReviewController {
     }>;
     approveReview(id: string): Promise<{
         id: string;
-        rating: number;
         createdAt: Date;
         updatedAt: Date;
-        hospitalId: string | null;
+        rating: number;
         text: string | null;
         authorId: string;
+        hospitalId: string | null;
         doctorId: string | null;
         status: import("@prisma/client").$Enums.ReviewStatus;
         adminReply: string | null;
@@ -120,12 +120,12 @@ export declare class ReviewController {
     }>;
     rejectReview(id: string): Promise<{
         id: string;
-        rating: number;
         createdAt: Date;
         updatedAt: Date;
-        hospitalId: string | null;
+        rating: number;
         text: string | null;
         authorId: string;
+        hospitalId: string | null;
         doctorId: string | null;
         status: import("@prisma/client").$Enums.ReviewStatus;
         adminReply: string | null;
@@ -133,12 +133,12 @@ export declare class ReviewController {
     }>;
     replyToReview(id: string, body: ReplyToReviewDto): Promise<{
         id: string;
-        rating: number;
         createdAt: Date;
         updatedAt: Date;
-        hospitalId: string | null;
+        rating: number;
         text: string | null;
         authorId: string;
+        hospitalId: string | null;
         doctorId: string | null;
         status: import("@prisma/client").$Enums.ReviewStatus;
         adminReply: string | null;
