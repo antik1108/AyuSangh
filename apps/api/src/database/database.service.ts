@@ -139,4 +139,3 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     return this.prismaClient.$transaction.bind(this.prismaClient);
   }
 }
-
