@@ -2,14 +2,18 @@
 version: 2
 
 updates:
-  # Root workspace npm dependencies
+  # Root workspace npm dependencies.
+  # Key changes:
+  # - dependency-type: direct avoids noisy transitive/sub-dependency PRs
+  # - grouped prod/dev updates bundles many packages into fewer PRs
+  # - low open PR limit keeps overall Dependabot volume manageable
   - package-ecosystem: npm
     directory: "/"
     schedule:
       interval: weekly
       day: monday
       time: "03:00"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 1
     assignees:
       - antik1108
     labels:
@@ -22,7 +26,16 @@ updates:
     pull-request-branch-name:
       separator: "/"
     allow:
-      - dependency-type: all
+      - dependency-type: direct
+    groups:
+      root-production:
+        dependency-type: production
+        patterns:
+          - "*"
+      root-development:
+        dependency-type: development
+        patterns:
+          - "*"
     versioning-strategy: auto
 
   # API app npm dependencies (NestJS)
@@ -32,7 +45,7 @@ updates:
       interval: weekly
       day: monday
       time: "03:15"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 1
     assignees:
       - antik1108
     labels:
@@ -46,7 +59,16 @@ updates:
     pull-request-branch-name:
       separator: "/"
     allow:
-      - dependency-type: all
+      - dependency-type: direct
+    groups:
+      api-production:
+        dependency-type: production
+        patterns:
+          - "*"
+      api-development:
+        dependency-type: development
+        patterns:
+          - "*"
     versioning-strategy: auto
 
   # Web app npm dependencies (Next.js)
@@ -56,7 +78,7 @@ updates:
       interval: weekly
       day: monday
       time: "03:30"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 1
     assignees:
       - antik1108
     labels:
@@ -70,115 +92,77 @@ updates:
     pull-request-branch-name:
       separator: "/"
     allow:
-      - dependency-type: all
+      - dependency-type: direct
+    groups:
+      web-production:
+        dependency-type: production
+        patterns:
+          - "*"
+      web-development:
+        dependency-type: development
+        patterns:
+          - "*"
     versioning-strategy: auto
 
-  # Prisma schema and migrations
+  # Shared packages (config, shared-types, utils)
+  # Using a single multi-directory block keeps config maintainable and
+  # helps keep total open Dependabot PRs near the 3-5 range.
   - package-ecosystem: npm
-    directory: "/prisma"
+    directories:
+      - "/packages/config"
+      - "/packages/shared-types"
+      - "/packages/utils"
     schedule:
       interval: weekly
       day: monday
       time: "03:45"
-    open-pull-requests-limit: 5
-    assignees:
-      - antik1108
-    labels:
-      - dependencies
-      - database
-      - prisma
-    commit-message:
-      prefix: "chore(prisma/deps)"
-      include: scope
-    pull-request-branch-name:
-      separator: "/"
-    allow:
-      - dependency-type: all
-    versioning-strategy: auto
-
-  # Shared config packages
-  - package-ecosystem: npm
-    directory: "/packages/config"
-    schedule:
-      interval: weekly
-      day: monday
-      time: "04:00"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     assignees:
       - antik1108
     labels:
       - dependencies
       - packages
-      - config
+      - shared
     commit-message:
-      prefix: "chore(config/deps)"
+      prefix: "chore(shared/deps)"
       include: scope
     pull-request-branch-name:
       separator: "/"
     allow:
-      - dependency-type: all
+      - dependency-type: direct
+    groups:
+      shared-production:
+        dependency-type: production
+        patterns:
+          - "*"
+      shared-development:
+        dependency-type: development
+        patterns:
+          - "*"
     versioning-strategy: auto
 
-  # Shared types packages
-  - package-ecosystem: npm
-    directory: "/packages/shared-types"
-    schedule:
-      interval: weekly
-      day: monday
-      time: "04:15"
-    open-pull-requests-limit: 5
-    assignees:
-      - antik1108
-    labels:
-      - dependencies
-      - packages
-      - types
-    commit-message:
-      prefix: "chore(shared-types/deps)"
-      include: scope
-    pull-request-branch-name:
-      separator: "/"
-    allow:
-      - dependency-type: all
-    versioning-strategy: auto
-
-  # Shared utilities packages
-  - package-ecosystem: npm
-    directory: "/packages/utils"
+  # Docker image updates (API and Web)
+  - package-ecosystem: docker
+    directories:
+      - "/apps/api"
+      - "/apps/web"
     schedule:
       interval: weekly
       day: monday
       time: "04:30"
-    open-pull-requests-limit: 5
-    assignees:
-      - antik1108
-    labels:
-      - dependencies
-      - packages
-      - utils
-    commit-message:
-      prefix: "chore(utils/deps)"
-      include: scope
-    pull-request-branch-name:
-      separator: "/"
-    allow:
-      - dependency-type: all
-    versioning-strategy: auto
-
-  # Docker image updates - API
-  - package-ecosystem: docker
-    directory: "/apps/api"
-    schedule:
-      interval: weekly
-      day: monday
-      time: "04:45"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     assignees:
       - antik1108
     labels:
       - dependencies
       - docker
-      - api
+      - infra
     commit-message:
-      prefix: "ci(docker/api)"
+      prefix: "ci(docker)"
       include: scope
+    pull-request-branch-name:
+      separator: "/"
+    groups:
+      docker-images:
+        patterns:
+          - "*"
