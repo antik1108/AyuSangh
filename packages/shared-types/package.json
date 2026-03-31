@@ -12,6 +12,6 @@
     "typescript": "latest"
   },
   "dependencies": {
-    "@prisma/client": "^6.6.0"
+    "@prisma/client": "^7.6.0"
   }
 }
