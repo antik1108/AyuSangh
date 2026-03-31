@@ -27,7 +27,7 @@ export class DoctorRepository extends BaseRepository<
       },
       include: {
         reviews: true,
-      }
+      },
     });
   }
 }
