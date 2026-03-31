@@ -16,13 +16,13 @@ export class DoctorService {
 
   async registerDoctor(dto: RegisterDoctorDto) {
     return this.doctorRepo.create({
-      firstName:       dto.firstName,
-      lastName:        dto.lastName,
-      specialization:  dto.specialization,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      specialization: dto.specialization,
       experienceYears: dto.experienceYears,
-      bio:             dto.bio,
-      phone:           dto.phone,
-      qualifications:  dto.qualifications ?? [],
+      bio: dto.bio,
+      phone: dto.phone,
+      qualifications: dto.qualifications ?? [],
       consultationFee: dto.consultationFee,
       ...(dto.userId && { user: { connect: { id: dto.userId } } }),
     });
