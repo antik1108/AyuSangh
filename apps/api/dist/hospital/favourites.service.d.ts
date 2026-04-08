@@ -1,6 +1,6 @@
 import { DatabaseService } from '../database/database.service';
 import { Favourite, Hospital, Location, Review } from '@prisma/client';
-interface FavouriteWithHospital extends Favourite {
+export interface FavouriteWithHospital extends Favourite {
     hospital: Hospital & {
         location: Location;
         reviews: Review[];
@@ -15,4 +15,3 @@ export declare class FavouritesService {
     isFavourite(userId: string, hospitalId: string): Promise<boolean>;
     getFavouriteCount(hospitalId: string): Promise<number>;
 }
-export {};

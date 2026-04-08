@@ -23,14 +23,17 @@ let DoctorService = class DoctorService {
     async getProfile(id) {
         return this.doctorRepo.findById(id);
     }
-    async registerDoctor(data) {
+    async registerDoctor(dto) {
         return this.doctorRepo.create({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            specialization: data.specialization,
-            experienceYears: data.experienceYears,
-            bio: data.bio,
-            user: { connect: { id: data.userId } }
+            firstName: dto.firstName,
+            lastName: dto.lastName,
+            specialization: dto.specialization,
+            experienceYears: dto.experienceYears,
+            bio: dto.bio,
+            phone: dto.phone,
+            qualifications: dto.qualifications ?? [],
+            consultationFee: dto.consultationFee,
+            ...(dto.userId && { user: { connect: { id: dto.userId } } }),
         });
     }
 };

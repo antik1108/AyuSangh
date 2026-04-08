@@ -1,32 +1,55 @@
 import { ReviewRepository } from './review.repository';
-import { DefaultRatingStrategy } from './strategies/default-rating.strategy';
-import { SubmitReviewDto } from './dto/submit-review.dto';
-import { DatabaseService } from '../database/database.service';
+import { RatingContext } from './rating.context';
+import { SubmitReviewDto, UpdateReviewDto } from './dto/submit-review.dto';
 export declare class ReviewService {
     private readonly reviewRepo;
-    private readonly ratingStrategy;
-    private readonly databaseService;
-    constructor(reviewRepo: ReviewRepository, ratingStrategy: DefaultRatingStrategy, databaseService: DatabaseService);
-    submitReview(userId: string, data: SubmitReviewDto): Promise<{
+    private readonly ratingContext;
+    constructor(reviewRepo: ReviewRepository, ratingContext: RatingContext);
+    submitReview(userId: string, dto: SubmitReviewDto): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        rating: number;
+        ratingCleanliness: number;
+        ratingStaffBehaviour: number;
+        ratingWaitTime: number;
         text: string | null;
+        ratingOverall: number;
         authorId: string;
         hospitalId: string | null;
         doctorId: string | null;
         status: import("@prisma/client").$Enums.ReviewStatus;
         adminReply: string | null;
         adminReplyAt: Date | null;
+    }>;
+    updateReview(reviewId: string, userId: string, dto: UpdateReviewDto): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        ratingCleanliness: number;
+        ratingStaffBehaviour: number;
+        ratingWaitTime: number;
+        text: string | null;
+        ratingOverall: number;
+        authorId: string;
+        hospitalId: string | null;
+        doctorId: string | null;
+        status: import("@prisma/client").$Enums.ReviewStatus;
+        adminReply: string | null;
+        adminReplyAt: Date | null;
+    }>;
+    deleteReview(reviewId: string, userId: string, userRole: string): Promise<{
+        message: string;
     }>;
     getHospitalReviews(hospitalId: string): Promise<{
         reviews: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            rating: number;
+            ratingCleanliness: number;
+            ratingStaffBehaviour: number;
+            ratingWaitTime: number;
             text: string | null;
+            ratingOverall: number;
             authorId: string;
             hospitalId: string | null;
             doctorId: string | null;
@@ -34,16 +57,18 @@ export declare class ReviewService {
             adminReply: string | null;
             adminReplyAt: Date | null;
         }[];
-        averageScore: number;
-        totalReviews: number;
+        score: import("./interfaces/rating-strategy.interface").AggregatedScore;
     }>;
     getDoctorReviews(doctorId: string): Promise<{
         reviews: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            rating: number;
+            ratingCleanliness: number;
+            ratingStaffBehaviour: number;
+            ratingWaitTime: number;
             text: string | null;
+            ratingOverall: number;
             authorId: string;
             hospitalId: string | null;
             doctorId: string | null;
@@ -51,34 +76,33 @@ export declare class ReviewService {
             adminReply: string | null;
             adminReplyAt: Date | null;
         }[];
-        averageScore: number;
-        totalReviews: number;
+        score: import("./interfaces/rating-strategy.interface").AggregatedScore;
     }>;
-    deleteReview(reviewId: string, userId: string, userRole: string): Promise<{
-        message: string;
-    }>;
-    updateReview(reviewId: string, userId: string, updates: {
-        rating?: number;
-        text?: string;
-    }): Promise<{
+    getPendingReviews(): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        rating: number;
+        ratingCleanliness: number;
+        ratingStaffBehaviour: number;
+        ratingWaitTime: number;
         text: string | null;
+        ratingOverall: number;
         authorId: string;
         hospitalId: string | null;
         doctorId: string | null;
         status: import("@prisma/client").$Enums.ReviewStatus;
         adminReply: string | null;
         adminReplyAt: Date | null;
-    }>;
+    }[]>;
     approveReview(reviewId: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        rating: number;
+        ratingCleanliness: number;
+        ratingStaffBehaviour: number;
+        ratingWaitTime: number;
         text: string | null;
+        ratingOverall: number;
         authorId: string;
         hospitalId: string | null;
         doctorId: string | null;
@@ -90,8 +114,11 @@ export declare class ReviewService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        rating: number;
+        ratingCleanliness: number;
+        ratingStaffBehaviour: number;
+        ratingWaitTime: number;
         text: string | null;
+        ratingOverall: number;
         authorId: string;
         hospitalId: string | null;
         doctorId: string | null;
@@ -103,8 +130,11 @@ export declare class ReviewService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        rating: number;
+        ratingCleanliness: number;
+        ratingStaffBehaviour: number;
+        ratingWaitTime: number;
         text: string | null;
+        ratingOverall: number;
         authorId: string;
         hospitalId: string | null;
         doctorId: string | null;
@@ -112,33 +142,4 @@ export declare class ReviewService {
         adminReply: string | null;
         adminReplyAt: Date | null;
     }>;
-    getPendingReviews(): Promise<({
-        hospital: {
-            name: string;
-            id: string;
-        } | null;
-        doctor: {
-            id: string;
-            firstName: string;
-            lastName: string;
-        } | null;
-        author: {
-            id: string;
-            email: string;
-            firstName: string | null;
-            lastName: string | null;
-        };
-    } & {
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        rating: number;
-        text: string | null;
-        authorId: string;
-        hospitalId: string | null;
-        doctorId: string | null;
-        status: import("@prisma/client").$Enums.ReviewStatus;
-        adminReply: string | null;
-        adminReplyAt: Date | null;
-    })[]>;
 }

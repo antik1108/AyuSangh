@@ -35,6 +35,9 @@ let HospitalController = class HospitalController {
     searchHospitals(name, city) {
         return this.hospitalService.search(name, city);
     }
+    async getUserFavourites(req) {
+        return this.favouritesService.getUserFavourites(req.user.userId);
+    }
     getHospital(id) {
         return this.hospitalService.getProfile(id);
     }
@@ -75,9 +78,6 @@ let HospitalController = class HospitalController {
         await this.favouritesService.removeFromFavourites(req.user.userId, hospitalId);
         return { message: 'Removed from favourites' };
     }
-    async getUserFavourites(req) {
-        return this.favouritesService.getUserFavourites(req.user.userId);
-    }
     async isFavourite(req, hospitalId) {
         const isFav = await this.favouritesService.isFavourite(req.user.userId, hospitalId);
         return { isFavourite: isFav };
@@ -92,6 +92,14 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], HospitalController.prototype, "searchHospitals", null);
+__decorate([
+    (0, common_1.Get)('user/favourites'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HospitalController.prototype, "getUserFavourites", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -180,14 +188,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], HospitalController.prototype, "removeFromFavourites", null);
-__decorate([
-    (0, common_1.Get)('user/favourites'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], HospitalController.prototype, "getUserFavourites", null);
 __decorate([
     (0, common_1.Get)(':hospitalId/is-favourite'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

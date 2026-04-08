@@ -81,7 +81,7 @@ let AdvancedSearchService = class AdvancedSearchService {
             where,
             include: {
                 location: true,
-                reviews: { select: { rating: true } },
+                reviews: { select: { ratingOverall: true, ratingCleanliness: true, ratingStaffBehaviour: true, ratingWaitTime: true } },
             },
             take: limit,
             skip: offset,
@@ -114,7 +114,7 @@ let AdvancedSearchService = class AdvancedSearchService {
         const doctors = await this.databaseService.doctor.findMany({
             where,
             include: {
-                reviews: { select: { rating: true } },
+                reviews: { select: { ratingOverall: true, ratingCleanliness: true, ratingStaffBehaviour: true, ratingWaitTime: true } },
                 institutions: {
                     include: { hospital: { include: { location: true } } },
                 },
@@ -134,9 +134,10 @@ let AdvancedSearchService = class AdvancedSearchService {
                 if (!hasCity)
                     return false;
             }
-            if (doctor.reviews && doctor.reviews.length > 0) {
-                const avgRating = doctor.reviews.reduce((sum, r) => sum + (r.rating ?? 0), 0) /
-                    doctor.reviews.length;
+            const d = doctor;
+            if (d.reviews && d.reviews.length > 0) {
+                const avgRating = d.reviews.reduce((sum, r) => sum + (r.ratingOverall ?? 0), 0) /
+                    d.reviews.length;
                 if (minRating !== undefined && avgRating < minRating)
                     return false;
                 if (maxRating !== undefined && avgRating > maxRating)
@@ -239,7 +240,7 @@ let AdvancedSearchService = class AdvancedSearchService {
             },
             include: {
                 location: true,
-                reviews: { select: { rating: true } },
+                reviews: { select: { ratingOverall: true, ratingCleanliness: true, ratingStaffBehaviour: true, ratingWaitTime: true } },
             },
             take: limit,
             skip: offset,
@@ -258,7 +259,7 @@ let AdvancedSearchService = class AdvancedSearchService {
                 ],
             },
             include: {
-                reviews: { select: { rating: true } },
+                reviews: { select: { ratingOverall: true, ratingCleanliness: true, ratingStaffBehaviour: true, ratingWaitTime: true } },
                 institutions: {
                     include: { hospital: { include: { location: true } } },
                 },

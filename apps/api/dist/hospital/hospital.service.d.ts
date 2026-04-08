@@ -1,5 +1,4 @@
 import { HospitalRepository } from './hospital.repository';
-import { DatabaseService } from '../database/database.service';
 interface UploadResult {
     url: string;
     publicId: string;
@@ -10,8 +9,7 @@ interface UploadResult {
 }
 export declare class HospitalService {
     private readonly hospitalRepo;
-    private readonly prisma;
-    constructor(hospitalRepo: HospitalRepository, prisma: DatabaseService);
+    constructor(hospitalRepo: HospitalRepository);
     search(name?: string, city?: string): Promise<{
         name: string;
         id: string;
@@ -23,12 +21,18 @@ export declare class HospitalService {
         institutionType: import("@prisma/client").$Enums.InstitutionType;
         adminId: string;
         locationId: string;
-        rating: number | null;
-        isActive: boolean;
         phone: string | null;
         website: string | null;
+        bookingLink: string | null;
+        pincode: string | null;
+        services: string[];
+        openingHours: string | null;
+        rating: number | null;
+        ratingCleanliness: number | null;
+        ratingStaffBehaviour: number | null;
+        ratingWaitTime: number | null;
+        isActive: boolean;
     }[]>;
-    getRepo(): HospitalRepository;
     getProfile(id: string): Promise<{
         name: string;
         id: string;
@@ -40,10 +44,17 @@ export declare class HospitalService {
         institutionType: import("@prisma/client").$Enums.InstitutionType;
         adminId: string;
         locationId: string;
-        rating: number | null;
-        isActive: boolean;
         phone: string | null;
         website: string | null;
+        bookingLink: string | null;
+        pincode: string | null;
+        services: string[];
+        openingHours: string | null;
+        rating: number | null;
+        ratingCleanliness: number | null;
+        ratingStaffBehaviour: number | null;
+        ratingWaitTime: number | null;
+        isActive: boolean;
     } | null>;
     registerHospital(data: any): Promise<{
         name: string;
@@ -56,10 +67,17 @@ export declare class HospitalService {
         institutionType: import("@prisma/client").$Enums.InstitutionType;
         adminId: string;
         locationId: string;
-        rating: number | null;
-        isActive: boolean;
         phone: string | null;
         website: string | null;
+        bookingLink: string | null;
+        pincode: string | null;
+        services: string[];
+        openingHours: string | null;
+        rating: number | null;
+        ratingCleanliness: number | null;
+        ratingStaffBehaviour: number | null;
+        ratingWaitTime: number | null;
+        isActive: boolean;
     }>;
     updateProfilePhoto(hospitalId: string, photoUrl: string): Promise<{
         name: string;
@@ -72,10 +90,17 @@ export declare class HospitalService {
         institutionType: import("@prisma/client").$Enums.InstitutionType;
         adminId: string;
         locationId: string;
-        rating: number | null;
-        isActive: boolean;
         phone: string | null;
         website: string | null;
+        bookingLink: string | null;
+        pincode: string | null;
+        services: string[];
+        openingHours: string | null;
+        rating: number | null;
+        ratingCleanliness: number | null;
+        ratingStaffBehaviour: number | null;
+        ratingWaitTime: number | null;
+        isActive: boolean;
     }>;
     addImages(hospitalId: string, uploadResults: UploadResult[]): Promise<{
         id: string;

@@ -11,13 +11,15 @@ const common_1 = require("@nestjs/common");
 const community_service_1 = require("./community.service");
 const community_controller_1 = require("./community.controller");
 const community_repository_1 = require("./community.repository");
+const database_module_1 = require("../database/database.module");
 let CommunityModule = class CommunityModule {
 };
 exports.CommunityModule = CommunityModule;
 exports.CommunityModule = CommunityModule = __decorate([
     (0, common_1.Module)({
+        imports: [database_module_1.DatabaseModule],
         controllers: [community_controller_1.CommunityController],
-        providers: [community_service_1.CommunityService, community_repository_1.CommunityRepository]
+        providers: [community_service_1.CommunityService, community_repository_1.CommunityRepository],
     })
 ], CommunityModule);
 //# sourceMappingURL=community.module.js.map

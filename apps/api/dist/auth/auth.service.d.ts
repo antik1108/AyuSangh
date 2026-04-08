@@ -10,7 +10,6 @@ export declare class AuthService {
     private jwtService;
     private databaseService;
     private readonly accessTokenExpiry;
-    private readonly refreshTokenExpiry;
     constructor(usersService: UsersService, jwtService: JwtService, databaseService: DatabaseService);
     validateUser(email: string, pass: string): Promise<AuthenticatedUser | null>;
     login(user: AuthenticatedUser): Promise<LoginResponse>;

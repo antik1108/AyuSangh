@@ -9,11 +9,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DefaultRatingStrategy = void 0;
 const common_1 = require("@nestjs/common");
 let DefaultRatingStrategy = class DefaultRatingStrategy {
-    calculateScore(reviews) {
-        if (!reviews || reviews.length === 0)
-            return 0;
-        const total = reviews.reduce((acc, curr) => acc + curr.rating, 0);
-        return Math.round((total / reviews.length) * 10) / 10;
+    calculateAverage(reviews) {
+        const count = reviews?.length ?? 0;
+        if (count === 0) {
+            return { overall: 0, cleanliness: 0, staffBehaviour: 0, waitTime: 0, reviewCount: 0 };
+        }
+        const round = (n) => Math.round((n / count) * 10) / 10;
+        const totals = reviews.reduce((acc, r) => ({
+            overall: acc.overall + r.ratingOverall,
+            cleanliness: acc.cleanliness + r.ratingCleanliness,
+            staffBehaviour: acc.staffBehaviour + r.ratingStaffBehaviour,
+            waitTime: acc.waitTime + r.ratingWaitTime,
+        }), { overall: 0, cleanliness: 0, staffBehaviour: 0, waitTime: 0 });
+        return {
+            overall: round(totals.overall),
+            cleanliness: round(totals.cleanliness),
+            staffBehaviour: round(totals.staffBehaviour),
+            waitTime: round(totals.waitTime),
+            reviewCount: count,
+        };
     }
 };
 exports.DefaultRatingStrategy = DefaultRatingStrategy;

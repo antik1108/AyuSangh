@@ -12,23 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
 const app_service_1 = require("./app.service");
-const search_service_1 = require("./search/search.service");
-const roles_guard_1 = require("./auth/guards/roles.guard");
-const jwt_auth_guard_1 = require("./auth/guards/jwt-auth.guard");
-const roles_decorator_1 = require("./auth/decorators/roles.decorator");
-const client_1 = require("@prisma/client");
 let AppController = class AppController {
     appService;
-    searchService;
-    constructor(appService, searchService) {
+    constructor(appService) {
         this.appService = appService;
-        this.searchService = searchService;
     }
     getHello() {
         return this.appService.getHello();
-    }
-    async cleanupTestData() {
-        return this.searchService.cleanupTestData();
     }
 };
 exports.AppController = AppController;
@@ -38,17 +28,8 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)
 ], AppController.prototype, "getHello", null);
-__decorate([
-    (0, common_1.Post)('cleanup-test-data'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(client_1.Role.PLATFORM_ADMIN),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AppController.prototype, "cleanupTestData", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [app_service_1.AppService,
-        search_service_1.SearchService])
+    __metadata("design:paramtypes", [app_service_1.AppService])
 ], AppController);
 //# sourceMappingURL=app.controller.js.map

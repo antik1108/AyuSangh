@@ -33,7 +33,7 @@ let DoctorRepository = class DoctorRepository extends base_repository_1.BaseRepo
             },
             include: {
                 reviews: true,
-            }
+            },
         });
     }
 };

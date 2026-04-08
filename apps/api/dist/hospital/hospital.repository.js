@@ -36,8 +36,25 @@ let HospitalRepository = class HospitalRepository extends base_repository_1.Base
                 location: true,
                 departments: true,
                 accreditations: true,
-            }
+            },
         });
+    }
+    async updateProfilePhoto(hospitalId, photoUrl) {
+        return this.prisma.hospital.update({
+            where: { id: hospitalId },
+            data: { profilePhoto: photoUrl },
+        });
+    }
+    async addImages(hospitalId, images) {
+        return Promise.all(images.map((image) => this.prisma.institutionImage.create({
+            data: { ...image, hospitalId },
+        })));
+    }
+    async findImage(imageId) {
+        return this.prisma.institutionImage.findUnique({ where: { id: imageId } });
+    }
+    async deleteImage(imageId) {
+        return this.prisma.institutionImage.delete({ where: { id: imageId } });
     }
 };
 exports.HospitalRepository = HospitalRepository;

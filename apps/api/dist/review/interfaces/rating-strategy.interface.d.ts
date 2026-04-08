@@ -1,4 +1,11 @@
 import { Review } from '@prisma/client';
+export interface AggregatedScore {
+    overall: number;
+    cleanliness: number;
+    staffBehaviour: number;
+    waitTime: number;
+    reviewCount: number;
+}
 export interface IRatingStrategy {
-    calculateScore(reviews: Review[]): number;
+    calculateAverage(reviews: Review[]): AggregatedScore;
 }

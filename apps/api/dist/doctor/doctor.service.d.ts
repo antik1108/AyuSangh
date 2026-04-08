@@ -1,4 +1,5 @@
 import { DoctorRepository } from './doctor.repository';
+import { RegisterDoctorDto } from './dto/register-doctor.dto';
 export declare class DoctorService {
     private readonly doctorRepo;
     constructor(doctorRepo: DoctorRepository);
@@ -9,12 +10,14 @@ export declare class DoctorService {
         profilePhoto: string | null;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         phone: string | null;
+        isActive: boolean;
         userId: string | null;
         specialization: string;
         experienceYears: number;
         bio: string | null;
+        qualifications: string[];
+        consultationFee: number | null;
     }[]>;
     getProfile(id: string): Promise<{
         id: string;
@@ -23,25 +26,29 @@ export declare class DoctorService {
         profilePhoto: string | null;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         phone: string | null;
+        isActive: boolean;
         userId: string | null;
         specialization: string;
         experienceYears: number;
         bio: string | null;
+        qualifications: string[];
+        consultationFee: number | null;
     } | null>;
-    registerDoctor(data: any): Promise<{
+    registerDoctor(dto: RegisterDoctorDto): Promise<{
         id: string;
         firstName: string;
         lastName: string;
         profilePhoto: string | null;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         phone: string | null;
+        isActive: boolean;
         userId: string | null;
         specialization: string;
         experienceYears: number;
         bio: string | null;
+        qualifications: string[];
+        consultationFee: number | null;
     }>;
 }

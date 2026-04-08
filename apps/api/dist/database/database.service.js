@@ -57,10 +57,10 @@ let DatabaseService = class DatabaseService {
         return this.prismaClient.cost;
     }
     get $queryRaw() {
-        return this.prismaClient.$queryRaw;
+        return this.prismaClient.$queryRaw.bind(this.prismaClient);
     }
     get $transaction() {
-        return this.prismaClient.$transaction;
+        return this.prismaClient.$transaction.bind(this.prismaClient);
     }
 };
 exports.DatabaseService = DatabaseService;

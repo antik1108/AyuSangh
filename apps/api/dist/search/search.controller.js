@@ -16,6 +16,10 @@ exports.SearchController = void 0;
 const common_1 = require("@nestjs/common");
 const search_service_1 = require("./search.service");
 const advanced_search_service_1 = require("./advanced-search.service");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const roles_guard_1 = require("../auth/guards/roles.guard");
+const roles_decorator_1 = require("../auth/decorators/roles.decorator");
+const client_1 = require("@prisma/client");
 let SearchController = class SearchController {
     searchService;
     advancedSearchService;
@@ -80,6 +84,9 @@ let SearchController = class SearchController {
     }
     getTrending(limit = 10) {
         return this.advancedSearchService.getTrendingSearches(Math.min(limit, 50));
+    }
+    cleanupTestData() {
+        return this.searchService.cleanupTestData();
     }
 };
 exports.SearchController = SearchController;
@@ -157,6 +164,14 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], SearchController.prototype, "getTrending", null);
+__decorate([
+    (0, common_1.Post)('cleanup-test-data'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.Role.PLATFORM_ADMIN),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], SearchController.prototype, "cleanupTestData", null);
 exports.SearchController = SearchController = __decorate([
     (0, common_1.Controller)('search'),
     __metadata("design:paramtypes", [search_service_1.SearchService,

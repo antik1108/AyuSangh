@@ -14,11 +14,12 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DoctorController = void 0;
 const common_1 = require("@nestjs/common");
+const client_1 = require("@prisma/client");
 const doctor_service_1 = require("./doctor.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const roles_guard_1 = require("../auth/guards/roles.guard");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
-const client_1 = require("@prisma/client");
+const register_doctor_dto_1 = require("./dto/register-doctor.dto");
 let DoctorController = class DoctorController {
     doctorService;
     constructor(doctorService) {
@@ -30,8 +31,8 @@ let DoctorController = class DoctorController {
     getDoctor(id) {
         return this.doctorService.getProfile(id);
     }
-    registerDoctor(data) {
-        return this.doctorService.registerDoctor(data);
+    registerDoctor(dto) {
+        return this.doctorService.registerDoctor(dto);
     }
 };
 exports.DoctorController = DoctorController;
@@ -55,7 +56,7 @@ __decorate([
     (0, roles_decorator_1.Roles)(client_1.Role.PLATFORM_ADMIN, client_1.Role.HOSPITAL_ADMIN, client_1.Role.DOCTOR),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [register_doctor_dto_1.RegisterDoctorDto]),
     __metadata("design:returntype", void 0)
 ], DoctorController.prototype, "registerDoctor", null);
 exports.DoctorController = DoctorController = __decorate([

@@ -25,14 +25,24 @@ export declare class SearchController {
         institutionType: import("@prisma/client").$Enums.InstitutionType;
         adminId: string;
         locationId: string;
-        rating: number | null;
-        isActive: boolean;
         phone: string | null;
         website: string | null;
+        bookingLink: string | null;
+        pincode: string | null;
+        services: string[];
+        openingHours: string | null;
+        rating: number | null;
+        ratingCleanliness: number | null;
+        ratingStaffBehaviour: number | null;
+        ratingWaitTime: number | null;
+        isActive: boolean;
     } & {
         location: import("@prisma/client").Location;
         distance_km?: number;
     })[]>;
     getHospitalsByFilters(type: string, city: string, state: string, minRating: number, limit?: number, offset?: number): Promise<import("./advanced-search.service").HospitalSearchResult[]>;
     getTrending(limit?: number): Promise<string[]>;
+    cleanupTestData(): Promise<{
+        message: string;
+    }>;
 }

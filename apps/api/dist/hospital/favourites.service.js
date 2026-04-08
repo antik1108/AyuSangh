@@ -18,23 +18,17 @@ let FavouritesService = class FavouritesService {
         this.databaseService = databaseService;
     }
     async addToFavourites(userId, hospitalId) {
-        return await this.databaseService.favourite.create({
-            data: {
-                userId,
-                hospitalId,
-            },
+        return this.databaseService.favourite.create({
+            data: { userId, hospitalId },
         });
     }
     async removeFromFavourites(userId, hospitalId) {
         await this.databaseService.favourite.deleteMany({
-            where: {
-                userId,
-                hospitalId,
-            },
+            where: { userId, hospitalId },
         });
     }
     async getUserFavourites(userId) {
-        return (await this.databaseService.favourite.findMany({
+        return this.databaseService.favourite.findMany({
             where: { userId },
             include: {
                 hospital: {
@@ -45,21 +39,18 @@ let FavouritesService = class FavouritesService {
                 },
             },
             orderBy: { addedAt: 'desc' },
-        }));
+        });
     }
     async isFavourite(userId, hospitalId) {
         const favourite = await this.databaseService.favourite.findUnique({
             where: {
-                userId_hospitalId: {
-                    userId,
-                    hospitalId,
-                },
+                userId_hospitalId: { userId, hospitalId },
             },
         });
         return !!favourite;
     }
     async getFavouriteCount(hospitalId) {
-        return await this.databaseService.favourite.count({
+        return this.databaseService.favourite.count({
             where: { hospitalId },
         });
     }

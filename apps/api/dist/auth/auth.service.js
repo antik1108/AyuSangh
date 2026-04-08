@@ -54,7 +54,6 @@ let AuthService = class AuthService {
     jwtService;
     databaseService;
     accessTokenExpiry = '8h';
-    refreshTokenExpiry = '7d';
     constructor(usersService, jwtService, databaseService) {
         this.usersService = usersService;
         this.jwtService = jwtService;
@@ -129,6 +128,9 @@ let AuthService = class AuthService {
         const tokenRecord = await this.databaseService.refreshToken.findUnique({
             where: { token: refreshToken },
         });
+        if (!tokenRecord) {
+            throw new common_1.UnauthorizedException('Refresh token not found');
+        }
         this._validateTokenRecord(tokenRecord);
         return tokenRecord;
     }

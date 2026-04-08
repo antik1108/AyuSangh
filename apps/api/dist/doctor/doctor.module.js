@@ -11,14 +11,16 @@ const common_1 = require("@nestjs/common");
 const doctor_service_1 = require("./doctor.service");
 const doctor_controller_1 = require("./doctor.controller");
 const doctor_repository_1 = require("./doctor.repository");
+const database_module_1 = require("../database/database.module");
 let DoctorModule = class DoctorModule {
 };
 exports.DoctorModule = DoctorModule;
 exports.DoctorModule = DoctorModule = __decorate([
     (0, common_1.Module)({
+        imports: [database_module_1.DatabaseModule],
         controllers: [doctor_controller_1.DoctorController],
         providers: [doctor_service_1.DoctorService, doctor_repository_1.DoctorRepository],
-        exports: [doctor_service_1.DoctorService]
+        exports: [doctor_service_1.DoctorService],
     })
 ], DoctorModule);
 //# sourceMappingURL=doctor.module.js.map
