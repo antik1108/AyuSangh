@@ -1,666 +1,154 @@
-direction: right
 
-# ═══════════════════════════════════════════════════════════════
-# AyuSangh — Full System Class Diagram
-# NestJS + Prisma + PostgreSQL
-# Pattern: Controller → Service → Repository
-# ═══════════════════════════════════════════════════════════════
-
-# ─────────────────────────────────────────────
-# ENUMS
-# ─────────────────────────────────────────────
-
-Role: {
-  shape: class
-  style.fill: "#fff9c4"
-  PATIENT
-  DOCTOR
-  HOSPITAL_ADMIN
-  PLATFORM_ADMIN
-}
-
-InstitutionType: {
-  shape: class
-  style.fill: "#fff9c4"
-  HOSPITAL
-  CLINIC
-  DIAGNOSTIC_CENTRE
-  NURSING_HOME
-}
-
-ReviewStatus: {
-  shape: class
-  style.fill: "#fff9c4"
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-# ─────────────────────────────────────────────
-# DATABASE MODELS (Prisma Entities)
-# ─────────────────────────────────────────────
-
-User: {
-  shape: class
-  style.fill: "#e3f2fd"
-  + id: String
-  + email: String
-  + passwordHash: String
-  + refreshToken: String?
-  + refreshTokenExpiresAt: DateTime?
-  + role: Role
-  + firstName: String?
-  + lastName: String?
-  + profilePhoto: String?
-  + createdAt: DateTime
-  + updatedAt: DateTime
-}
-
-Location: {
-  shape: class
-  style.fill: "#e3f2fd"
-  + id: String
-  + address: String
-  + city: String
-  + state: String
-  + zipCode: String
-  + country: String
-  + latitude: Float?
-  + longitude: Float?
-}
-
-Hospital: {
-  shape: class
-  style.fill: "#e3f2fd"
-  + id: String
-  + name: String
-  + description: String?
-  + institutionType: InstitutionType
-  + adminId: String
-  + locationId: String
-  + phone: String?
-  + website: String?
-  + email: String?
-  + bookingLink: String?
-  + pincode: String?
-  + services: String[]
-  + openingHours: String?
-  + rating: Float?
-  + ratingCleanliness: Float?
-  + ratingStaffBehaviour: Float?
-  + ratingWaitTime: Float?
-  + profilePhoto: String?
-  + isActive: Boolean
-  + createdAt: DateTime
-  + updatedAt: DateTime
-}
-
-Doctor: {
-  shape: class
-  style.fill: "#e3f2fd"
-  + id: String
-  + userId: String?
-  + firstName: String
-  + lastName: String
-  + specialization: String
-  + experienceYears: Int
-  + bio: String?
-  + phone: String?
-  + profilePhoto: String?
-  + qualifications: String[]
-  + consultationFee: Float?
-  + isActive: Boolean
-  + createdAt: DateTime
-  + updatedAt: DateTime
-}
-
-Review: {
-  shape: class
-  style.fill: "#e3f2fd"
-  + id: String
-  + text: String?
-  + ratingOverall: Int
-  + ratingCleanliness: Int
-  + ratingStaffBehaviour: Int
-  + ratingWaitTime: Int
-  + authorId: String
-  + hospitalId: String?
-  + doctorId: String?
-  + status: ReviewStatus
-  + adminReply: String?
-  + adminReplyAt: DateTime?
-  + createdAt: DateTime
-  + updatedAt: DateTime
-}
-
-Department: {
-  shape: class
-  style.fill: "#e3f2fd"
-  + id: String
-  + name: String
-  + hospitalId: String
-}
-
-Accreditation: {
-  shape: class
-  style.fill: "#e3f2fd"
-  + id: String
-  + name: String
-  + issueDate: DateTime
-  + expiryDate: DateTime?
-  + hospitalId: String
-}
-
-Cost: {
-  shape: class
-  style.fill: "#e3f2fd"
-  + id: String
-  + procedureName: String
-  + estimatedCost: Float
-  + hospitalId: String
-}
-
-CommunityPost: {
-  shape: class
-  style.fill: "#e3f2fd"
-  + id: String
-  + title: String
-  + content: String
-  + authorId: String
-  + createdAt: DateTime
-  + updatedAt: DateTime
-}
-
-DoctorInstitution: {
-  shape: class
-  style.fill: "#e3f2fd"
-  + id: String
-  + doctorId: String
-  + hospitalId: String
-  + joinedAt: DateTime
-}
-
-Favourite: {
-  shape: class
-  style.fill: "#e3f2fd"
-  + id: String
-  + userId: String
-  + hospitalId: String
-  + addedAt: DateTime
-}
-
-InstitutionImage: {
-  shape: class
-  style.fill: "#e3f2fd"
-  + id: String
-  + hospitalId: String
-  + imageUrl: String
-  + altText: String?
-  + isProfilePhoto: Boolean
-  + uploadedAt: DateTime
-}
-
-RefreshToken: {
-  shape: class
-  style.fill: "#e3f2fd"
-  + id: String
-  + token: String
-  + userEmail: String
-  + expiresAt: DateTime
-  + revokedAt: DateTime?
-  + createdAt: DateTime
-}
-
-# ─────────────────────────────────────────────
-# COMMON INFRASTRUCTURE
-# ─────────────────────────────────────────────
-
-BaseRepository: {
-  shape: class
-  style.fill: "#f3e5f5"
-  # model: PrismaDelegate
-  + findById(id: String): Promise<T>
-  + findAll(): Promise<T[]>
-  + create(data: CreateInput): Promise<T>
-  + update(id: String, data: UpdateInput): Promise<T>
-  + delete(id: String): Promise<T>
-}
-
-DatabaseService: {
-  shape: class
-  style.fill: "#f3e5f5"
-  - prismaClient: PrismaClient
-  + client: PrismaClient
-  + user: UserDelegate
-  + hospital: HospitalDelegate
-  + doctor: DoctorDelegate
-  + review: ReviewDelegate
-  + refreshToken: RefreshTokenDelegate
-  + favourite: FavouriteDelegate
-  + institutionImage: InstitutionImageDelegate
-  + location: LocationDelegate
-  + communityPost: CommunityPostDelegate
-  + cost: CostDelegate
-  + $queryRaw: QueryRaw
-  + $transaction: Transaction
-  + onModuleInit(): Promise<void>
-  + onModuleDestroy(): Promise<void>
-}
-
-TransformInterceptor: {
-  shape: class
-  style.fill: "#f3e5f5"
-  + intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>>
-}
-
-AllExceptionsFilter: {
-  shape: class
-  style.fill: "#f3e5f5"
-  + catch(exception: unknown, host: ArgumentsHost): void
-}
-
-CloudinaryService: {
-  shape: class
-  style.fill: "#f3e5f5"
-  + uploadImage(file: Express.Multer.File): Promise<UploadResult>
-  + deleteImage(publicId: String): Promise<void>
-}
-
-# ─────────────────────────────────────────────
-# STRATEGY PATTERN — Rating
-# ─────────────────────────────────────────────
-
-IRatingStrategy: {
-  shape: class
-  style.fill: "#e8f5e9"
-  style.stroke-dash: 4
-  <<interface>>
-  + calculateAverage(reviews: Review[]): AggregatedScore
-}
-
-AggregatedScore: {
-  shape: class
-  style.fill: "#e8f5e9"
-  style.stroke-dash: 4
-  <<interface>>
-  + overall: number
-  + cleanliness: number
-  + staffBehaviour: number
-  + waitTime: number
-  + reviewCount: number
-}
-
-DefaultRatingStrategy: {
-  shape: class
-  style.fill: "#e8f5e9"
-  + calculateAverage(reviews: Review[]): AggregatedScore
-}
-
-RatingContext: {
-  shape: class
-  style.fill: "#e8f5e9"
-  - strategies: Map<InstitutionType, IRatingStrategy>
-  - defaultStrategy: DefaultRatingStrategy
-  + register(type: InstitutionType, strategy: IRatingStrategy): void
-  + calculate(reviews: Review[], institutionType?: InstitutionType): AggregatedScore
-}
-
-# ─────────────────────────────────────────────
-# AUTH MODULE
-# ─────────────────────────────────────────────
-
-AuthController: {
-  shape: class
-  style.fill: "#fce4ec"
-  + login(req: Request): Promise<LoginResponse>
-  + refresh(body: RefreshDto): Promise<RefreshTokenResponse>
-  + logout(body: LogoutDto): Promise<void>
-  + registerPatient(dto: RegisterUserDto): Promise<User>
-  + registerHospital(dto: RegisterHospitalDto): Promise<Object>
-}
-
-AuthService: {
-  shape: class
-  style.fill: "#fce4ec"
-  - accessTokenExpiry: String
-  + validateUser(email: String, pass: String): Promise<AuthenticatedUser>
-  + login(user: AuthenticatedUser): Promise<LoginResponse>
-  + refreshAccessToken(refreshToken: String): Promise<RefreshTokenResponse>
-  + logout(refreshToken: String): Promise<void>
-  + validateRefreshToken(refreshToken: String): Promise<RefreshToken>
-  + registerUser(data: RegisterUserDto): Promise<User>
-  + registerHospital(data: RegisterHospitalDto): Promise<Object>
-  - _generateRandomToken(): String
-  - _validateTokenRecord(tokenRecord: RefreshToken): void
-}
-
-UsersService: {
-  shape: class
-  style.fill: "#fce4ec"
-  + findOneByEmail(email: String): Promise<User>
-  + findOneById(id: String): Promise<User>
-  + createPatient(data: RegisterUserDto): Promise<User>
-  + createHospitalAdmin(data: RegisterHospitalDto): Promise<Object>
-}
-
-JwtStrategy: {
-  shape: class
-  style.fill: "#fce4ec"
-  + validate(payload: JwtPayload): Promise<AuthenticatedUser>
-}
-
-LocalStrategy: {
-  shape: class
-  style.fill: "#fce4ec"
-  + validate(email: String, password: String): Promise<AuthenticatedUser>
-}
-
-JwtAuthGuard: {
-  shape: class
-  style.fill: "#fce4ec"
-  + canActivate(context: ExecutionContext): Boolean
-}
-
-RolesGuard: {
-  shape: class
-  style.fill: "#fce4ec"
-  + canActivate(context: ExecutionContext): Boolean
-}
-
-# ─────────────────────────────────────────────
-# HOSPITAL MODULE
-# ─────────────────────────────────────────────
-
-HospitalController: {
-  shape: class
-  style.fill: "#fff3e0"
-  + searchHospitals(name?: String, city?: String): Promise<Hospital[]>
-  + getProfile(id: String): Promise<Hospital>
-  + registerHospital(dto: any, req: Request): Promise<Hospital>
-  + uploadProfilePhoto(hospitalId: String, file: File, req: Request): Promise<Object>
-  + uploadImages(hospitalId: String, files: File[], req: Request): Promise<Object>
-  + deleteImage(hospitalId: String, imageId: String, req: Request): Promise<Object>
-  + addFavourite(hospitalId: String, req: Request): Promise<Favourite>
-  + removeFavourite(hospitalId: String, req: Request): Promise<void>
-  + isFavourite(hospitalId: String, req: Request): Promise<Boolean>
-  + getUserFavourites(req: Request): Promise<FavouriteWithHospital[]>
-}
-
-HospitalService: {
-  shape: class
-  style.fill: "#fff3e0"
-  + search(name?: String, city?: String): Promise<Hospital[]>
-  + getProfile(id: String): Promise<Hospital>
-  + registerHospital(data: any): Promise<Hospital>
-  + updateProfilePhoto(hospitalId: String, photoUrl: String): Promise<Hospital>
-  + addImages(hospitalId: String, uploadResults: UploadResult[]): Promise<Object>
-  + deleteImage(hospitalId: String, imageId: String): Promise<Object>
-}
-
-HospitalRepository: {
-  shape: class
-  style.fill: "#fff3e0"
-  + searchHospitals(nameQuery?: String, cityQuery?: String): Promise<Hospital[]>
-  + updateProfilePhoto(hospitalId: String, photoUrl: String): Promise<Hospital>
-  + addImages(hospitalId: String, images: Object[]): Promise<Object>
-  + findImage(imageId: String): Promise<InstitutionImage>
-  + deleteImage(imageId: String): Promise<InstitutionImage>
-}
-
-FavouritesService: {
-  shape: class
-  style.fill: "#fff3e0"
-  + addToFavourites(userId: String, hospitalId: String): Promise<Favourite>
-  + removeFromFavourites(userId: String, hospitalId: String): Promise<void>
-  + getUserFavourites(userId: String): Promise<FavouriteWithHospital[]>
-  + isFavourite(userId: String, hospitalId: String): Promise<Boolean>
-  + getFavouriteCount(hospitalId: String): Promise<number>
-}
-
-# ─────────────────────────────────────────────
-# DOCTOR MODULE
-# ─────────────────────────────────────────────
-
-DoctorController: {
-  shape: class
-  style.fill: "#e0f7fa"
-  + searchDoctors(specialization?: String): Promise<Doctor[]>
-  + getProfile(id: String): Promise<Doctor>
-  + registerDoctor(dto: RegisterDoctorDto): Promise<Doctor>
-}
-
-DoctorService: {
-  shape: class
-  style.fill: "#e0f7fa"
-  + search(specialization?: String): Promise<Doctor[]>
-  + getProfile(id: String): Promise<Doctor>
-  + registerDoctor(dto: RegisterDoctorDto): Promise<Doctor>
-}
-
-DoctorRepository: {
-  shape: class
-  style.fill: "#e0f7fa"
-  + searchDoctors(query?: String): Promise<Doctor[]>
-}
-
-# ─────────────────────────────────────────────
-# REVIEW MODULE
-# ─────────────────────────────────────────────
-
-ReviewController: {
-  shape: class
-  style.fill: "#fafafa"
-  + getHospitalReviews(id: String): Promise<Object>
-  + getDoctorReviews(id: String): Promise<Object>
-  + submitReview(dto: SubmitReviewDto, req: Request): Promise<Review>
-  + updateReview(id: String, dto: UpdateReviewDto, req: Request): Promise<Review>
-  + deleteReview(id: String, req: Request): Promise<Object>
-  + getPendingReviews(): Promise<Review[]>
-  + approveReview(id: String): Promise<Review>
-  + rejectReview(id: String): Promise<Review>
-  + replyToReview(id: String, dto: ReplyToReviewDto): Promise<Review>
-}
-
-ReviewService: {
-  shape: class
-  style.fill: "#fafafa"
-  + submitReview(userId: String, dto: SubmitReviewDto): Promise<Review>
-  + updateReview(reviewId: String, userId: String, dto: UpdateReviewDto): Promise<Review>
-  + deleteReview(reviewId: String, userId: String, userRole: String): Promise<Object>
-  + getHospitalReviews(hospitalId: String): Promise<Object>
-  + getDoctorReviews(doctorId: String): Promise<Object>
-  + getPendingReviews(): Promise<Review[]>
-  + approveReview(reviewId: String): Promise<Review>
-  + rejectReview(reviewId: String): Promise<Review>
-  + replyToReview(reviewId: String, replyText: String): Promise<Review>
-}
-
-ReviewRepository: {
-  shape: class
-  style.fill: "#fafafa"
-  + findByHospital(hospitalId: String): Promise<Review[]>
-  + findByDoctor(doctorId: String): Promise<Review[]>
-  + findFirstByAuthorAndEntity(authorId: String, hospitalId?: String, doctorId?: String): Promise<Review>
-  + updateStatus(reviewId: String, status: ReviewStatus): Promise<Review>
-  + updateContent(reviewId: String, updates: UpdateReviewDto): Promise<Review>
-  + addAdminReply(reviewId: String, replyText: String): Promise<Review>
-  + findPending(): Promise<Review[]>
-}
-
-# ─────────────────────────────────────────────
+# ─────────────────────────────
 # SEARCH MODULE
-# ─────────────────────────────────────────────
+# ─────────────────────────────
 
 SearchController: {
   shape: class
   style.fill: "#ede7f6"
-  + globalSearch(query: String): Promise<SearchResult>
-  + advancedSearch(query: String, type?: String, limit?: number, offset?: number): Promise<SearchResult>
-  + advancedHospitalSearch(options: Object): Promise<Hospital[]>
-  + advancedDoctorSearch(options: Object): Promise<Doctor[]>
-  + findNearby(lat: number, lng: number, radiusKm?: number): Promise<Hospital[]>
-  + getHospitalsByFilters(filters: Object): Promise<Hospital[]>
-  + getTrendingSearches(limit?: number): Promise<String[]>
-  + cleanupTestData(): Promise<Object>
+  globalSearch(query)
+  advancedSearch(query, type, limit, offset)
+  advancedHospitalSearch(options)
+  advancedDoctorSearch(options)
+  findNearby(lat, lng, radiusKm)
+  getHospitalsByFilters(filters)
+  getTrendingSearches(limit)
 }
 
 SearchService: {
   shape: class
   style.fill: "#ede7f6"
-  - cache: Map<String, Object>
-  + globalSearch(query: String): Promise<SearchResult>
-  + cleanupTestData(): Promise<Object>
+  cache
+  globalSearch(query)
+  cleanupTestData()
 }
 
 AdvancedSearchService: {
   shape: class
   style.fill: "#ede7f6"
-  + search(options: SearchOptions): Promise<SearchResult>
-  + advancedHospitalSearch(options: Object): Promise<HospitalSearchResult[]>
-  + advancedDoctorSearch(options: Object): Promise<DoctorSearchResult[]>
-  + getTrendingSearches(limit?: number): Promise<String[]>
-  + findNearby(options: Object): Promise<Hospital[]>
-  + getHospitalsByFilters(filters: Object): Promise<HospitalSearchResult[]>
-  - _searchHospitals(term: String, limit: number, offset: number): Promise<HospitalSearchResult[]>
-  - _searchDoctors(term: String, limit: number, offset: number): Promise<DoctorSearchResult[]>
-  - _escapeSearchTerm(term: String): String
+  search(options)
+  advancedHospitalSearch(options)
+  advancedDoctorSearch(options)
+  getTrendingSearches(limit)
+  findNearby(options)
+  getHospitalsByFilters(filters)
 }
 
-# ─────────────────────────────────────────────
+# ─────────────────────────────
 # COMMUNITY MODULE
-# ─────────────────────────────────────────────
+# ─────────────────────────────
 
 CommunityController: {
   shape: class
   style.fill: "#e8eaf6"
-  + getAllPosts(): Promise<CommunityPost[]>
-  + createPost(data: Object, req: Request): Promise<CommunityPost>
+  getAllPosts()
+  createPost(data, req)
 }
 
 CommunityService: {
   shape: class
   style.fill: "#e8eaf6"
-  + getAllPosts(): Promise<CommunityPost[]>
-  + createPost(data: Object): Promise<CommunityPost>
+  getAllPosts()
+  createPost(data)
 }
 
 CommunityRepository: {
   shape: class
   style.fill: "#e8eaf6"
+  findAll()
+  create(data)
 }
 
-# ─────────────────────────────────────────────
+# ─────────────────────────────
 # COST MODULE
-# ─────────────────────────────────────────────
+# ─────────────────────────────
 
 CostController: {
   shape: class
   style.fill: "#f1f8e9"
-  + getAll(): Promise<Cost[]>
+  getAll()
 }
 
 CostService: {
   shape: class
   style.fill: "#f1f8e9"
-  + getAll(): Promise<Cost[]>
+  getAll()
 }
 
 CostRepository: {
   shape: class
   style.fill: "#f1f8e9"
+  findAll()
 }
 
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════
 # RELATIONSHIPS
-# ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════
 
-# ─── Prisma Entity Relationships ───
-
-User -> Hospital: "1..* (admin)"
-User -> Doctor: "0..1 (profile)"
-User -> Review: "1..* (authored)"
-User -> CommunityPost: "1..* (authored)"
-User -> Favourite: "1..*"
-
-Hospital -> Location: "1..1"
-Hospital -> Department: "1..*"
-Hospital -> Accreditation: "1..*"
-Hospital -> Cost: "1..*"
-Hospital -> Review: "1..*"
-Hospital -> InstitutionImage: "1..*"
-Hospital -> Favourite: "1..*"
-
-Doctor -> Review: "1..*"
-
-DoctorInstitution -> Doctor: "N..1"
-DoctorInstitution -> Hospital: "N..1"
-
+User -> Hospital: "1 to many"
+User -> Doctor: "0 to 1"
+User -> Review: "1 to many"
+User -> CommunityPost: "1 to many"
+User -> Favourite: "1 to many"
+Hospital -> Location: "1 to 1"
+Hospital -> Department: "1 to many"
+Hospital -> Accreditation: "1 to many"
+Hospital -> Cost: "1 to many"
+Hospital -> Review: "1 to many"
+Hospital -> InstitutionImage: "1 to many"
+Hospital -> Favourite: "1 to many"
+Doctor -> Review: "1 to many"
+DoctorInstitution -> Doctor: "many to 1"
+DoctorInstitution -> Hospital: "many to 1"
 Review -> ReviewStatus: "uses"
 Hospital -> InstitutionType: "uses"
 User -> Role: "uses"
 
-# ─── Repository Inheritance ───
+HospitalRepository -> BaseRepository: "extends"
+ReviewRepository -> BaseRepository: "extends"
+DoctorRepository -> BaseRepository: "extends"
+CommunityRepository -> BaseRepository: "extends"
+CostRepository -> BaseRepository: "extends"
 
-HospitalRepository -> BaseRepository: extends
-ReviewRepository -> BaseRepository: extends
-DoctorRepository -> BaseRepository: extends
-CommunityRepository -> BaseRepository: extends
-CostRepository -> BaseRepository: extends
+DefaultRatingStrategy -> IRatingStrategy: "implements"
+RatingContext -> IRatingStrategy: "uses"
+RatingContext -> DefaultRatingStrategy: "injects"
+IRatingStrategy -> AggregatedScore: "returns"
 
-# ─── Strategy Pattern ───
+AuthController -> AuthService: "injects"
+AuthService -> UsersService: "injects"
+AuthService -> DatabaseService: "injects"
+LocalStrategy -> AuthService: "injects"
+JwtAuthGuard -> JwtStrategy: "uses"
+RolesGuard -> Role: "uses"
 
-DefaultRatingStrategy -> IRatingStrategy: implements
-RatingContext -> IRatingStrategy: uses
-RatingContext -> DefaultRatingStrategy: injects
-IRatingStrategy -> AggregatedScore: returns
+HospitalController -> HospitalService: "injects"
+HospitalController -> FavouritesService: "injects"
+HospitalController -> CloudinaryService: "injects"
+HospitalService -> HospitalRepository: "injects"
+HospitalRepository -> DatabaseService: "injects"
+FavouritesService -> DatabaseService: "injects"
 
-# ─── Auth Module DI ───
+DoctorController -> DoctorService: "injects"
+DoctorService -> DoctorRepository: "injects"
+DoctorRepository -> DatabaseService: "injects"
 
-AuthController -> AuthService: injects
-AuthService -> UsersService: injects
-AuthService -> DatabaseService: injects
-LocalStrategy -> AuthService: injects
-JwtAuthGuard -> JwtStrategy: uses
-RolesGuard -> Role: uses
+ReviewController -> ReviewService: "injects"
+ReviewService -> ReviewRepository: "injects"
+ReviewService -> RatingContext: "injects"
+ReviewRepository -> DatabaseService: "injects"
 
-# ─── Hospital Module DI ───
+SearchController -> SearchService: "injects"
+SearchController -> AdvancedSearchService: "injects"
+SearchService -> HospitalService: "injects"
+SearchService -> DoctorService: "injects"
+AdvancedSearchService -> DatabaseService: "injects"
 
-HospitalController -> HospitalService: injects
-HospitalController -> FavouritesService: injects
-HospitalController -> CloudinaryService: injects
-HospitalService -> HospitalRepository: injects
-HospitalRepository -> DatabaseService: injects
-FavouritesService -> DatabaseService: injects
+CommunityController -> CommunityService: "injects"
+CommunityService -> CommunityRepository: "injects"
+CommunityRepository -> DatabaseService: "injects"
 
-# ─── Doctor Module DI ───
+CostController -> CostService: "injects"
+CostService -> CostRepository: "injects"
+CostRepository -> DatabaseService: "injects"
 
-DoctorController -> DoctorService: injects
-DoctorService -> DoctorRepository: injects
-DoctorRepository -> DatabaseService: injects
-
-# ─── Review Module DI ───
-
-ReviewController -> ReviewService: injects
-ReviewService -> ReviewRepository: injects
-ReviewService -> RatingContext: injects
-ReviewRepository -> DatabaseService: injects
-
-# ─── Search Module DI ───
-
-SearchController -> SearchService: injects
-SearchController -> AdvancedSearchService: injects
-SearchService -> HospitalService: injects
-SearchService -> DoctorService: injects
-AdvancedSearchService -> DatabaseService: injects
-
-# ─── Community Module DI ───
-
-CommunityController -> CommunityService: injects
-CommunityService -> CommunityRepository: injects
-CommunityRepository -> DatabaseService: injects
-
-# ─── Cost Module DI ───
-
-CostController -> CostService: injects
-CostService -> CostRepository: injects
-CostRepository -> DatabaseService: injects
