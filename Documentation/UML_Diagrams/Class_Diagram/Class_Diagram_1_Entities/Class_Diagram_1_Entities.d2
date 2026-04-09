@@ -1,0 +1,207 @@
+direction: right
+
+# ═══════════════════════════════════════
+# AyuSangh — Class Diagram 1 of 3
+# Prisma Database Entities
+# ═══════════════════════════════════════
+
+User: {
+  shape: class
+  style.fill: "#e3f2fd"
+  +id: String
+  +email: String
+  +passwordHash: String
+  +role: Role
+  +firstName: String
+  +lastName: String
+  +profilePhoto: String
+  +createdAt: DateTime
+  +updatedAt: DateTime
+}
+
+Hospital: {
+  shape: class
+  style.fill: "#e8f5e9"
+  +id: String
+  +name: String
+  +description: String
+  +institutionType: InstitutionType
+  +adminId: String
+  +locationId: String
+  +phone: String
+  +bookingLink: String
+  +pincode: String
+  +rating: Float
+  +ratingCleanliness: Float
+  +ratingStaffBehaviour: Float
+  +ratingWaitTime: Float
+  +isActive: Boolean
+  +createdAt: DateTime
+  +updatedAt: DateTime
+}
+
+Doctor: {
+  shape: class
+  style.fill: "#e8f5e9"
+  +id: String
+  +userId: String
+  +firstName: String
+  +lastName: String
+  +specialization: String
+  +experienceYears: Int
+  +consultationFee: Float
+  +isActive: Boolean
+  +createdAt: DateTime
+  +updatedAt: DateTime
+}
+
+Review: {
+  shape: class
+  style.fill: "#fff3e0"
+  +id: String
+  +text: String
+  +ratingOverall: Int
+  +ratingCleanliness: Int
+  +ratingStaffBehaviour: Int
+  +ratingWaitTime: Int
+  +authorId: String
+  +hospitalId: String
+  +doctorId: String
+  +status: ReviewStatus
+  +adminReply: String
+  +createdAt: DateTime
+  +updatedAt: DateTime
+}
+
+Location: {
+  shape: class
+  style.fill: "#f3e5f5"
+  +id: String
+  +address: String
+  +city: String
+  +state: String
+  +zipCode: String
+  +latitude: Float
+  +longitude: Float
+}
+
+Department: {
+  shape: class
+  style.fill: "#f3e5f5"
+  +id: String
+  +name: String
+  +hospitalId: String
+}
+
+Accreditation: {
+  shape: class
+  style.fill: "#f3e5f5"
+  +id: String
+  +name: String
+  +issueDate: DateTime
+  +expiryDate: DateTime
+  +hospitalId: String
+}
+
+Cost: {
+  shape: class
+  style.fill: "#f3e5f5"
+  +id: String
+  +procedureName: String
+  +estimatedCost: Float
+  +hospitalId: String
+}
+
+DoctorInstitution: {
+  shape: class
+  style.fill: "#fce4ec"
+  +id: String
+  +doctorId: String
+  +hospitalId: String
+  +joinedAt: DateTime
+}
+
+Favourite: {
+  shape: class
+  style.fill: "#fce4ec"
+  +id: String
+  +userId: String
+  +hospitalId: String
+  +addedAt: DateTime
+}
+
+InstitutionImage: {
+  shape: class
+  style.fill: "#fce4ec"
+  +id: String
+  +hospitalId: String
+  +imageUrl: String
+  +isProfilePhoto: Boolean
+  +uploadedAt: DateTime
+}
+
+RefreshToken: {
+  shape: class
+  style.fill: "#fce4ec"
+  +id: String
+  +token: String
+  +userEmail: String
+  +expiresAt: DateTime
+  +createdAt: DateTime
+}
+
+CommunityPost: {
+  shape: class
+  style.fill: "#e8eaf6"
+  +id: String
+  +title: String
+  +content: String
+  +authorId: String
+  +createdAt: DateTime
+}
+
+Role: {
+  shape: class
+  style.fill: "#fff9c4"
+  PATIENT: ""
+  DOCTOR: ""
+  HOSPITAL_ADMIN: ""
+  PLATFORM_ADMIN: ""
+}
+
+InstitutionType: {
+  shape: class
+  style.fill: "#fff9c4"
+  HOSPITAL: ""
+  CLINIC: ""
+  DIAGNOSTIC_CENTRE: ""
+  NURSING_HOME: ""
+}
+
+ReviewStatus: {
+  shape: class
+  style.fill: "#fff9c4"
+  PENDING: ""
+  APPROVED: ""
+  REJECTED: ""
+}
+
+# ─── Relationships ───
+User -> Hospital: "1 to many (admin)"
+User -> Doctor: "0 to 1 (profile)"
+User -> Review: "1 to many"
+User -> CommunityPost: "1 to many"
+User -> Favourite: "1 to many"
+User -> Role: "uses"
+Hospital -> Location: "1 to 1"
+Hospital -> Department: "1 to many"
+Hospital -> Accreditation: "1 to many"
+Hospital -> Cost: "1 to many"
+Hospital -> Review: "1 to many"
+Hospital -> InstitutionImage: "1 to many"
+Hospital -> Favourite: "1 to many"
+Hospital -> InstitutionType: "uses"
+Doctor -> Review: "1 to many"
+DoctorInstitution -> Doctor: "many to 1"
+DoctorInstitution -> Hospital: "many to 1"
+Review -> ReviewStatus: "uses"
