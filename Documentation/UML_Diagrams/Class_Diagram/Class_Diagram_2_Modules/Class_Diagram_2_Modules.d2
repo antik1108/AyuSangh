@@ -1,0 +1,301 @@
+direction: right
+
+# ═══════════════════════════════════════
+# AyuSangh — Class Diagram 2 of 3
+# NestJS Modules
+# Controller → Service → Repository
+# ═══════════════════════════════════════
+
+# ─────────────────────────────
+# AUTH MODULE
+# ─────────────────────────────
+
+AuthController: {
+  shape: class
+  style.fill: "#fce4ec"
+  +login(req: Request): LoginResponse
+  +refresh(body: RefreshDto): TokenResponse
+  +logout(body: LogoutDto): void
+  +registerPatient(dto: RegisterUserDto): User
+  +registerHospital(dto: RegisterHospitalDto): Object
+}
+
+AuthService: {
+  shape: class
+  style.fill: "#fce4ec"
+  -accessTokenExpiry: String
+  +validateUser(email: String): AuthUser
+  +login(user: AuthUser): LoginResponse
+  +refreshAccessToken(token: String): TokenResponse
+  +logout(token: String): void
+  +registerUser(data: RegisterUserDto): User
+  +registerHospital(data: RegisterHospitalDto): Object
+}
+
+UsersService: {
+  shape: class
+  style.fill: "#fce4ec"
+  +findOneByEmail(email: String): User
+  +findOneById(id: String): User
+  +createPatient(data: RegisterUserDto): User
+  +createHospitalAdmin(data: RegisterHospitalDto): Object
+}
+
+JwtStrategy: {
+  shape: class
+  style.fill: "#fce4ec"
+  +validate(payload: JwtPayload): AuthUser
+}
+
+LocalStrategy: {
+  shape: class
+  style.fill: "#fce4ec"
+  +validate(email: String): AuthUser
+}
+
+JwtAuthGuard: {
+  shape: class
+  style.fill: "#fce4ec"
+  +canActivate(context: ExecutionContext): Boolean
+}
+
+RolesGuard: {
+  shape: class
+  style.fill: "#fce4ec"
+  +canActivate(context: ExecutionContext): Boolean
+}
+
+# ─────────────────────────────
+# HOSPITAL MODULE
+# ─────────────────────────────
+
+HospitalController: {
+  shape: class
+  style.fill: "#fff3e0"
+  +searchHospitals(name: String): HospitalArray
+  +getProfile(id: String): Hospital
+  +registerHospital(dto: Object): Hospital
+  +uploadProfilePhoto(hospitalId: String): Object
+  +uploadImages(hospitalId: String): Object
+  +deleteImage(hospitalId: String): Object
+  +addFavourite(hospitalId: String): Favourite
+  +removeFavourite(hospitalId: String): void
+  +isFavourite(hospitalId: String): Boolean
+  +getUserFavourites(req: Request): FavouriteArray
+}
+
+HospitalService: {
+  shape: class
+  style.fill: "#fff3e0"
+  +search(name: String): HospitalArray
+  +getProfile(id: String): Hospital
+  +registerHospital(data: Object): Hospital
+  +updateProfilePhoto(hospitalId: String): Hospital
+  +addImages(hospitalId: String): Object
+  +deleteImage(hospitalId: String): Object
+}
+
+HospitalRepository: {
+  shape: class
+  style.fill: "#fff3e0"
+  +searchHospitals(nameQuery: String): HospitalArray
+  +updateProfilePhoto(hospitalId: String): Hospital
+  +addImages(hospitalId: String): Object
+  +findImage(imageId: String): InstitutionImage
+  +deleteImage(imageId: String): InstitutionImage
+}
+
+FavouritesService: {
+  shape: class
+  style.fill: "#fff3e0"
+  +addToFavourites(userId: String): Favourite
+  +removeFromFavourites(userId: String): void
+  +getUserFavourites(userId: String): FavouriteArray
+  +isFavourite(userId: String): Boolean
+  +getFavouriteCount(hospitalId: String): Int
+}
+
+# ─────────────────────────────
+# DOCTOR MODULE
+# ─────────────────────────────
+
+DoctorController: {
+  shape: class
+  style.fill: "#e0f7fa"
+  +searchDoctors(specialization: String): DoctorArray
+  +getProfile(id: String): Doctor
+  +registerDoctor(dto: RegisterDoctorDto): Doctor
+}
+
+DoctorService: {
+  shape: class
+  style.fill: "#e0f7fa"
+  +search(specialization: String): DoctorArray
+  +getProfile(id: String): Doctor
+  +registerDoctor(dto: RegisterDoctorDto): Doctor
+}
+
+DoctorRepository: {
+  shape: class
+  style.fill: "#e0f7fa"
+  +searchDoctors(query: String): DoctorArray
+}
+
+# ─────────────────────────────
+# REVIEW MODULE
+# ─────────────────────────────
+
+ReviewController: {
+  shape: class
+  style.fill: "#f3e5f5"
+  +getHospitalReviews(id: String): Object
+  +getDoctorReviews(id: String): Object
+  +submitReview(dto: SubmitReviewDto): Review
+  +updateReview(id: String): Review
+  +deleteReview(id: String): Object
+  +getPendingReviews(): ReviewArray
+  +approveReview(id: String): Review
+  +rejectReview(id: String): Review
+  +replyToReview(id: String): Review
+}
+
+ReviewService: {
+  shape: class
+  style.fill: "#f3e5f5"
+  +submitReview(userId: String): Review
+  +updateReview(reviewId: String): Review
+  +deleteReview(reviewId: String): Object
+  +getHospitalReviews(hospitalId: String): Object
+  +getDoctorReviews(doctorId: String): Object
+  +getPendingReviews(): ReviewArray
+  +approveReview(reviewId: String): Review
+  +rejectReview(reviewId: String): Review
+  +replyToReview(reviewId: String): Review
+}
+
+ReviewRepository: {
+  shape: class
+  style.fill: "#f3e5f5"
+  +findByHospital(hospitalId: String): ReviewArray
+  +findByDoctor(doctorId: String): ReviewArray
+  +findFirstByAuthor(authorId: String): Review
+  +updateStatus(reviewId: String): Review
+  +updateContent(reviewId: String): Review
+  +addAdminReply(reviewId: String): Review
+  +findPending(): ReviewArray
+}
+
+# ─────────────────────────────
+# SEARCH MODULE
+# ─────────────────────────────
+
+SearchController: {
+  shape: class
+  style.fill: "#ede7f6"
+  +globalSearch(query: String): SearchResult
+  +advancedSearch(query: String): SearchResult
+  +advancedHospitalSearch(options: Object): HospitalArray
+  +advancedDoctorSearch(options: Object): DoctorArray
+  +findNearby(lat: Float): HospitalArray
+  +getHospitalsByFilters(filters: Object): HospitalArray
+  +getTrendingSearches(limit: Int): StringArray
+}
+
+SearchService: {
+  shape: class
+  style.fill: "#ede7f6"
+  -cache: Map
+  +globalSearch(query: String): SearchResult
+  +cleanupTestData(): Object
+}
+
+AdvancedSearchService: {
+  shape: class
+  style.fill: "#ede7f6"
+  +search(options: SearchOptions): SearchResult
+  +advancedHospitalSearch(options: Object): HospitalArray
+  +advancedDoctorSearch(options: Object): DoctorArray
+  +getTrendingSearches(limit: Int): StringArray
+  +findNearby(options: Object): HospitalArray
+  +getHospitalsByFilters(filters: Object): HospitalArray
+}
+
+# ─────────────────────────────
+# COMMUNITY MODULE
+# ─────────────────────────────
+
+CommunityController: {
+  shape: class
+  style.fill: "#e8eaf6"
+  +getAllPosts(): PostArray
+  +createPost(data: Object): CommunityPost
+}
+
+CommunityService: {
+  shape: class
+  style.fill: "#e8eaf6"
+  +getAllPosts(): PostArray
+  +createPost(data: Object): CommunityPost
+}
+
+CommunityRepository: {
+  shape: class
+  style.fill: "#e8eaf6"
+  +findAll(): PostArray
+  +create(data: Object): CommunityPost
+}
+
+# ─────────────────────────────
+# COST MODULE
+# ─────────────────────────────
+
+CostController: {
+  shape: class
+  style.fill: "#f1f8e9"
+  +getAll(): CostArray
+}
+
+CostService: {
+  shape: class
+  style.fill: "#f1f8e9"
+  +getAll(): CostArray
+}
+
+CostRepository: {
+  shape: class
+  style.fill: "#f1f8e9"
+  +findAll(): CostArray
+}
+
+# ─── Auth Module ───
+AuthController -> AuthService: "injects"
+AuthService -> UsersService: "injects"
+LocalStrategy -> AuthService: "injects"
+JwtAuthGuard -> JwtStrategy: "uses"
+
+# ─── Hospital Module ───
+HospitalController -> HospitalService: "injects"
+HospitalController -> FavouritesService: "injects"
+HospitalService -> HospitalRepository: "injects"
+
+# ─── Doctor Module ───
+DoctorController -> DoctorService: "injects"
+DoctorService -> DoctorRepository: "injects"
+
+# ─── Review Module ───
+ReviewController -> ReviewService: "injects"
+ReviewService -> ReviewRepository: "injects"
+
+# ─── Search Module ───
+SearchController -> SearchService: "injects"
+SearchController -> AdvancedSearchService: "injects"
+SearchService -> HospitalService: "injects"
+SearchService -> DoctorService: "injects"
+
+# ─── Community Module ───
+CommunityController -> CommunityService: "injects"
+CommunityService -> CommunityRepository: "injects"
+
+# ─── Cost Module ───
+CostController -> CostService: "injects"
+CostService -> CostRepository: "injects"
