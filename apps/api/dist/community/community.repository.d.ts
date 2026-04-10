@@ -4,4 +4,5 @@ import { DatabaseService } from '../database/database.service';
 export declare class CommunityRepository extends BaseRepository<CommunityPost, Prisma.CommunityPostCreateInput, Prisma.CommunityPostUpdateInput> {
     private readonly prisma;
     constructor(prisma: DatabaseService);
+    findAllWithAuthor(): any;
 }

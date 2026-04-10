@@ -11,15 +11,13 @@ const common_1 = require("@nestjs/common");
 const cost_service_1 = require("./cost.service");
 const cost_controller_1 = require("./cost.controller");
 const cost_repository_1 = require("./cost.repository");
-const database_module_1 = require("../database/database.module");
 let CostModule = class CostModule {
 };
 exports.CostModule = CostModule;
 exports.CostModule = CostModule = __decorate([
     (0, common_1.Module)({
-        imports: [database_module_1.DatabaseModule],
         controllers: [cost_controller_1.CostController],
-        providers: [cost_service_1.CostService, cost_repository_1.CostRepository],
+        providers: [cost_service_1.CostService, cost_repository_1.CostRepository]
     })
 ], CostModule);
 //# sourceMappingURL=cost.module.js.map

@@ -19,6 +19,16 @@ let CommunityRepository = class CommunityRepository extends base_repository_1.Ba
         super(prisma.communityPost);
         this.prisma = prisma;
     }
+    findAllWithAuthor() {
+        return this.prisma.communityPost.findMany({
+            orderBy: { createdAt: 'desc' },
+            include: {
+                author: {
+                    select: { firstName: true, lastName: true, email: true },
+                },
+            },
+        });
+    }
 };
 exports.CommunityRepository = CommunityRepository;
 exports.CommunityRepository = CommunityRepository = __decorate([

@@ -1,18 +1,14 @@
 export declare class SubmitReviewDto {
-    ratingOverall: number;
-    ratingCleanliness: number;
-    ratingStaffBehaviour: number;
-    ratingWaitTime: number;
+    rating: number;
     text?: string;
     hospitalId?: string;
     doctorId?: string;
 }
-export declare class UpdateReviewDto {
-    ratingOverall?: number;
-    ratingCleanliness?: number;
-    ratingStaffBehaviour?: number;
-    ratingWaitTime?: number;
-    text?: string;
+export declare class ApproveReviewDto {
+    reviewId: string;
+}
+export declare class RejectReviewDto {
+    reviewId: string;
 }
 export declare class ReplyToReviewDto {
     replyText: string;

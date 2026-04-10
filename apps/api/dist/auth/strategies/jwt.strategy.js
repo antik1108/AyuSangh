@@ -22,12 +22,8 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             secretOrKey: constants_1.jwtConstants.secret,
         });
     }
-    validate(payload) {
-        return Promise.resolve({
-            userId: payload.sub,
-            email: payload.email,
-            role: payload.role,
-        });
+    async validate(payload) {
+        return { userId: payload.sub, email: payload.email, role: payload.role };
     }
 };
 exports.JwtStrategy = JwtStrategy;

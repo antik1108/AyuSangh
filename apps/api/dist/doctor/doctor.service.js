@@ -12,34 +12,45 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DoctorService = void 0;
 const common_1 = require("@nestjs/common");
 const doctor_repository_1 = require("./doctor.repository");
+const database_service_1 = require("../database/database.service");
 let DoctorService = class DoctorService {
     doctorRepo;
-    constructor(doctorRepo) {
+    prisma;
+    constructor(doctorRepo, prisma) {
         this.doctorRepo = doctorRepo;
+        this.prisma = prisma;
     }
     async search(specialization) {
         return this.doctorRepo.searchDoctors(specialization);
     }
     async getProfile(id) {
-        return this.doctorRepo.findById(id);
+        return this.prisma.doctor.findUnique({
+            where: { id },
+            include: {
+                reviews: true,
+                institutions: {
+                    include: {
+                        hospital: { include: { location: true } },
+                    },
+                },
+            },
+        });
     }
-    async registerDoctor(dto) {
+    async registerDoctor(data) {
         return this.doctorRepo.create({
-            firstName: dto.firstName,
-            lastName: dto.lastName,
-            specialization: dto.specialization,
-            experienceYears: dto.experienceYears,
-            bio: dto.bio,
-            phone: dto.phone,
-            qualifications: dto.qualifications ?? [],
-            consultationFee: dto.consultationFee,
-            ...(dto.userId && { user: { connect: { id: dto.userId } } }),
+            firstName: data.firstName,
+            lastName: data.lastName,
+            specialization: data.specialization,
+            experienceYears: data.experienceYears,
+            bio: data.bio,
+            user: { connect: { id: data.userId } }
         });
     }
 };
 exports.DoctorService = DoctorService;
 exports.DoctorService = DoctorService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [doctor_repository_1.DoctorRepository])
+    __metadata("design:paramtypes", [doctor_repository_1.DoctorRepository,
+        database_service_1.DatabaseService])
 ], DoctorService);
 //# sourceMappingURL=doctor.service.js.map

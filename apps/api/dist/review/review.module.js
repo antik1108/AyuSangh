@@ -12,7 +12,6 @@ const review_service_1 = require("./review.service");
 const review_controller_1 = require("./review.controller");
 const review_repository_1 = require("./review.repository");
 const default_rating_strategy_1 = require("./strategies/default-rating.strategy");
-const rating_context_1 = require("./rating.context");
 const database_module_1 = require("../database/database.module");
 let ReviewModule = class ReviewModule {
 };
@@ -21,7 +20,7 @@ exports.ReviewModule = ReviewModule = __decorate([
     (0, common_1.Module)({
         imports: [database_module_1.DatabaseModule],
         controllers: [review_controller_1.ReviewController],
-        providers: [review_service_1.ReviewService, review_repository_1.ReviewRepository, default_rating_strategy_1.DefaultRatingStrategy, rating_context_1.RatingContext],
+        providers: [review_service_1.ReviewService, review_repository_1.ReviewRepository, default_rating_strategy_1.DefaultRatingStrategy],
         exports: [review_service_1.ReviewService],
     })
 ], ReviewModule);

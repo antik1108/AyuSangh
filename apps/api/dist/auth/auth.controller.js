@@ -22,6 +22,7 @@ const client_1 = require("@prisma/client");
 const roles_guard_1 = require("./guards/roles.guard");
 const register_user_dto_1 = require("./dto/register-user.dto");
 const register_hospital_dto_1 = require("./dto/register-hospital.dto");
+const register_doctor_dto_1 = require("./dto/register-doctor.dto");
 const login_dto_1 = require("./dto/login.dto");
 let AuthController = class AuthController {
     authService;
@@ -47,8 +48,20 @@ let AuthController = class AuthController {
     async registerUser(body) {
         return this.authService.registerUser(body);
     }
+    async signup(body) {
+        return this.authService.registerUser(body);
+    }
     async registerHospital(body) {
         return this.authService.registerHospital(body);
+    }
+    async registerDoctor(body) {
+        return this.authService.registerDoctor(body);
+    }
+    async signupHospital(body) {
+        return this.authService.registerHospital(body);
+    }
+    async signupDoctor(body) {
+        return this.authService.registerDoctor(body);
     }
     getAdminData() {
         return { sensitiveData: 'This is protected by RBAC.' };
@@ -90,12 +103,40 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "registerUser", null);
 __decorate([
+    (0, common_1.Post)('signup'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [register_user_dto_1.RegisterUserDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "signup", null);
+__decorate([
     (0, common_1.Post)('register/hospital'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [register_hospital_dto_1.RegisterHospitalDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "registerHospital", null);
+__decorate([
+    (0, common_1.Post)('register/doctor'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [register_doctor_dto_1.RegisterDoctorDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "registerDoctor", null);
+__decorate([
+    (0, common_1.Post)('signup/hospital'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [register_hospital_dto_1.RegisterHospitalDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "signupHospital", null);
+__decorate([
+    (0, common_1.Post)('signup/doctor'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [register_doctor_dto_1.RegisterDoctorDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "signupDoctor", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.Role.PLATFORM_ADMIN, client_1.Role.HOSPITAL_ADMIN),

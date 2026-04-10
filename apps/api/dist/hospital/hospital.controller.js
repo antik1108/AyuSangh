@@ -38,6 +38,9 @@ let HospitalController = class HospitalController {
     async getUserFavourites(req) {
         return this.favouritesService.getUserFavourites(req.user.userId);
     }
+    async getMyHospital(req) {
+        return this.hospitalService.findHospitalByAdmin(req.user.userId);
+    }
     getHospital(id) {
         return this.hospitalService.getProfile(id);
     }
@@ -100,6 +103,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], HospitalController.prototype, "getUserFavourites", null);
+__decorate([
+    (0, common_1.Get)('admin/mine'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.Role.HOSPITAL_ADMIN),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HospitalController.prototype, "getMyHospital", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
