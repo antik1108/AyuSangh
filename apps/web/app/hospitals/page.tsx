@@ -238,62 +238,70 @@ export default function HospitalsPage() {
 
 function HospitalCard({ hospital: h }: { hospital: Hospital }) {
   return (
-    <div className="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:flex-row">
+    <div className="flex flex-col gap-0 rounded-xl border border-slate-200 bg-white overflow-hidden transition-all duration-150 hover:border-slate-300 hover:shadow-md sm:flex-row">
       {/* Image */}
-      <div className="h-36 w-full shrink-0 overflow-hidden rounded bg-slate-100 sm:w-48 flex items-center justify-center">
+      <div className="relative h-40 w-full shrink-0 bg-gradient-to-br from-slate-100 to-slate-50 sm:h-auto sm:w-44 flex items-center justify-center">
+        <Building2 size={32} className="text-slate-200" />
         {h.isVerified && (
-          <div className="absolute top-2 left-2">
-            <Badge variant="green">Verified</Badge>
+          <div className="absolute top-2.5 left-2.5">
+            <Badge variant="green">✓ Verified</Badge>
           </div>
         )}
-        <Building2 size={36} className="text-slate-300" />
       </div>
 
       {/* Info */}
-      <div className="flex flex-1 flex-col justify-between">
+      <div className="flex flex-1 flex-col justify-between p-4">
         <div>
           <div className="flex items-start justify-between gap-2">
-            <div>
-              <h2 className="font-semibold text-slate-900">{h.name}</h2>
+            <div className="min-w-0">
+              <h2 className="font-semibold text-slate-900 leading-snug">{h.name}</h2>
               <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-400">
-                <MapPin size={11} />
+                <MapPin size={11} className="shrink-0" />
                 {h.location.address}, {h.location.city}
-                {h.distance && ` • ${h.distance} away`}
+                {h.distance && (
+                  <span className="text-slate-300 mx-1">·</span>
+                )}
+                {h.distance && `${h.distance} away`}
               </p>
             </div>
-            <Badge variant="blue">{TYPE_LABELS[h.type]}</Badge>
+            <Badge variant="blue" className="shrink-0">{TYPE_LABELS[h.type]}</Badge>
           </div>
 
           {/* Rating breakdown */}
-          <div className="mt-3 flex flex-wrap gap-4">
+          <div className="mt-3 flex flex-wrap gap-5">
             {[
               { label: "Overall", val: h.ratings.overall },
               { label: "Cleanliness", val: h.ratings.cleanliness },
               { label: "Staff", val: h.ratings.staff },
             ].map(({ label, val }) => (
               <div key={label}>
-                <p className="text-xs text-slate-400 uppercase tracking-wide">{label}</p>
-                <p className="text-base font-semibold text-slate-800">
-                  {val.toFixed(1)} <span className="text-amber-400">★</span>
+                <p className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">{label}</p>
+                <p className="text-sm font-bold text-slate-800">
+                  {val.toFixed(1)}{" "}
+                  <span className="text-amber-400 font-normal">★</span>
                 </p>
               </div>
             ))}
           </div>
 
-          <p className="mt-2 text-sm text-slate-500 line-clamp-2">{h.description}</p>
+          <p className="mt-2.5 text-sm text-slate-500 leading-relaxed line-clamp-2">
+            {h.description}
+          </p>
 
           {/* Services */}
-          <div className="mt-2 flex flex-wrap gap-1.5">
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
             {h.services.map((s) => (
               <Badge key={s} variant="default">{s}</Badge>
             ))}
           </div>
         </div>
 
-        <div className="mt-3 flex items-center justify-between">
+        <div className="mt-3.5 flex items-center justify-between border-t border-slate-100 pt-3">
           <div className="flex items-center gap-1.5">
             <RatingStars rating={h.ratings.overall} showValue />
-            <span className="text-xs text-slate-400">({h.ratings.totalReviews.toLocaleString()} reviews)</span>
+            <span className="text-xs text-slate-400">
+              ({h.ratings.totalReviews.toLocaleString()} reviews)
+            </span>
           </div>
           <Link href={`/hospitals/${h.id}`}>
             <Button size="sm">View Details</Button>
