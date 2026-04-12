@@ -1,5 +1,6 @@
+import { Request } from '@nestjs/common';
 import { ReviewService } from './review.service';
-import { SubmitReviewDto, UpdateReviewDto, ReplyToReviewDto } from './dto/submit-review.dto';
+import { SubmitReviewDto, ReplyToReviewDto } from './dto/submit-review.dto';
 interface RequestWithUser extends Request {
     user: {
         userId: string;
@@ -10,142 +11,20 @@ interface RequestWithUser extends Request {
 export declare class ReviewController {
     private readonly reviewService;
     constructor(reviewService: ReviewService);
-    getHospitalReviews(id: string): Promise<{
-        reviews: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            ratingCleanliness: number;
-            ratingStaffBehaviour: number;
-            ratingWaitTime: number;
-            text: string | null;
-            ratingOverall: number;
-            authorId: string;
-            hospitalId: string | null;
-            doctorId: string | null;
-            status: import("@prisma/client").$Enums.ReviewStatus;
-            adminReply: string | null;
-            adminReplyAt: Date | null;
-        }[];
-        score: import("./interfaces/rating-strategy.interface").AggregatedScore;
-    }>;
-    getDoctorReviews(id: string): Promise<{
-        reviews: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            ratingCleanliness: number;
-            ratingStaffBehaviour: number;
-            ratingWaitTime: number;
-            text: string | null;
-            ratingOverall: number;
-            authorId: string;
-            hospitalId: string | null;
-            doctorId: string | null;
-            status: import("@prisma/client").$Enums.ReviewStatus;
-            adminReply: string | null;
-            adminReplyAt: Date | null;
-        }[];
-        score: import("./interfaces/rating-strategy.interface").AggregatedScore;
-    }>;
-    submitReview(req: RequestWithUser, dto: SubmitReviewDto): Promise<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        ratingCleanliness: number;
-        ratingStaffBehaviour: number;
-        ratingWaitTime: number;
-        text: string | null;
-        ratingOverall: number;
-        authorId: string;
-        hospitalId: string | null;
-        doctorId: string | null;
-        status: import("@prisma/client").$Enums.ReviewStatus;
-        adminReply: string | null;
-        adminReplyAt: Date | null;
-    }>;
-    updateReview(req: RequestWithUser, id: string, dto: UpdateReviewDto): Promise<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        ratingCleanliness: number;
-        ratingStaffBehaviour: number;
-        ratingWaitTime: number;
-        text: string | null;
-        ratingOverall: number;
-        authorId: string;
-        hospitalId: string | null;
-        doctorId: string | null;
-        status: import("@prisma/client").$Enums.ReviewStatus;
-        adminReply: string | null;
-        adminReplyAt: Date | null;
-    }>;
-    deleteReview(req: RequestWithUser, id: string): Promise<{
-        message: string;
-    }>;
-    getPendingReviews(): Promise<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        ratingCleanliness: number;
-        ratingStaffBehaviour: number;
-        ratingWaitTime: number;
-        text: string | null;
-        ratingOverall: number;
-        authorId: string;
-        hospitalId: string | null;
-        doctorId: string | null;
-        status: import("@prisma/client").$Enums.ReviewStatus;
-        adminReply: string | null;
-        adminReplyAt: Date | null;
-    }[]>;
-    approveReview(id: string): Promise<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        ratingCleanliness: number;
-        ratingStaffBehaviour: number;
-        ratingWaitTime: number;
-        text: string | null;
-        ratingOverall: number;
-        authorId: string;
-        hospitalId: string | null;
-        doctorId: string | null;
-        status: import("@prisma/client").$Enums.ReviewStatus;
-        adminReply: string | null;
-        adminReplyAt: Date | null;
-    }>;
-    rejectReview(id: string): Promise<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        ratingCleanliness: number;
-        ratingStaffBehaviour: number;
-        ratingWaitTime: number;
-        text: string | null;
-        ratingOverall: number;
-        authorId: string;
-        hospitalId: string | null;
-        doctorId: string | null;
-        status: import("@prisma/client").$Enums.ReviewStatus;
-        adminReply: string | null;
-        adminReplyAt: Date | null;
-    }>;
-    replyToReview(id: string, dto: ReplyToReviewDto): Promise<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        ratingCleanliness: number;
-        ratingStaffBehaviour: number;
-        ratingWaitTime: number;
-        text: string | null;
-        ratingOverall: number;
-        authorId: string;
-        hospitalId: string | null;
-        doctorId: string | null;
-        status: import("@prisma/client").$Enums.ReviewStatus;
-        adminReply: string | null;
-        adminReplyAt: Date | null;
-    }>;
+    getHospitalReviewsForManage(req: RequestWithUser, id: string): unknown;
+    getHospitalReviews(id: string): unknown;
+    getDoctorReviews(id: string): unknown;
+    getPendingReviews(): unknown;
+    getMyReviews(req: RequestWithUser): unknown;
+    getInstitutionReviews(institutionId: string): unknown;
+    submitReview(req: RequestWithUser, data: SubmitReviewDto): unknown;
+    updateReview(req: RequestWithUser, id: string, updates: {
+        rating?: number;
+        text?: string;
+    }): unknown;
+    deleteReview(req: RequestWithUser, id: string): unknown;
+    approveReview(id: string): unknown;
+    rejectReview(id: string): unknown;
+    replyToReview(id: string, body: ReplyToReviewDto): unknown;
 }
 export {};

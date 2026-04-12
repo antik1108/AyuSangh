@@ -14,13 +14,14 @@ const hospital_repository_1 = require("./hospital.repository");
 const favourites_service_1 = require("./favourites.service");
 const database_module_1 = require("../database/database.module");
 const cloudinary_service_1 = require("../common/services/cloudinary.service");
+const institutions_controller_1 = require("./institutions.controller");
 let HospitalModule = class HospitalModule {
 };
 exports.HospitalModule = HospitalModule;
 exports.HospitalModule = HospitalModule = __decorate([
     (0, common_1.Module)({
         imports: [database_module_1.DatabaseModule],
-        controllers: [hospital_controller_1.HospitalController],
+        controllers: [hospital_controller_1.HospitalController, institutions_controller_1.InstitutionsController],
         providers: [hospital_service_1.HospitalService, hospital_repository_1.HospitalRepository, favourites_service_1.FavouritesService, cloudinary_service_1.CloudinaryService],
         exports: [hospital_service_1.HospitalService, favourites_service_1.FavouritesService],
     })

@@ -18,7 +18,7 @@ let CommunityService = class CommunityService {
         this.repo = repo;
     }
     getAllPosts() {
-        return this.repo.findAll();
+        return this.repo.findAllWithAuthor();
     }
     createPost(data) {
         return this.repo.create(data);

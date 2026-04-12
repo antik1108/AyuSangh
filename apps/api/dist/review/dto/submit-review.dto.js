@@ -9,13 +9,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ReplyToReviewDto = exports.UpdateReviewDto = exports.SubmitReviewDto = void 0;
+exports.ReplyToReviewDto = exports.RejectReviewDto = exports.ApproveReviewDto = exports.SubmitReviewDto = void 0;
 const class_validator_1 = require("class-validator");
 class SubmitReviewDto {
-    ratingOverall;
-    ratingCleanliness;
-    ratingStaffBehaviour;
-    ratingWaitTime;
+    rating;
     text;
     hospitalId;
     doctorId;
@@ -26,25 +23,7 @@ __decorate([
     (0, class_validator_1.Min)(1),
     (0, class_validator_1.Max)(5),
     __metadata("design:type", Number)
-], SubmitReviewDto.prototype, "ratingOverall", void 0);
-__decorate([
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
-    (0, class_validator_1.Max)(5),
-    __metadata("design:type", Number)
-], SubmitReviewDto.prototype, "ratingCleanliness", void 0);
-__decorate([
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
-    (0, class_validator_1.Max)(5),
-    __metadata("design:type", Number)
-], SubmitReviewDto.prototype, "ratingStaffBehaviour", void 0);
-__decorate([
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
-    (0, class_validator_1.Max)(5),
-    __metadata("design:type", Number)
-], SubmitReviewDto.prototype, "ratingWaitTime", void 0);
+], SubmitReviewDto.prototype, "rating", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
@@ -60,47 +39,22 @@ __decorate([
     (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
 ], SubmitReviewDto.prototype, "doctorId", void 0);
-class UpdateReviewDto {
-    ratingOverall;
-    ratingCleanliness;
-    ratingStaffBehaviour;
-    ratingWaitTime;
-    text;
+class ApproveReviewDto {
+    reviewId;
 }
-exports.UpdateReviewDto = UpdateReviewDto;
+exports.ApproveReviewDto = ApproveReviewDto;
 __decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
-    (0, class_validator_1.Max)(5),
-    __metadata("design:type", Number)
-], UpdateReviewDto.prototype, "ratingOverall", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
-    (0, class_validator_1.Max)(5),
-    __metadata("design:type", Number)
-], UpdateReviewDto.prototype, "ratingCleanliness", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
-    (0, class_validator_1.Max)(5),
-    __metadata("design:type", Number)
-], UpdateReviewDto.prototype, "ratingStaffBehaviour", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
-    (0, class_validator_1.Max)(5),
-    __metadata("design:type", Number)
-], UpdateReviewDto.prototype, "ratingWaitTime", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
-], UpdateReviewDto.prototype, "text", void 0);
+], ApproveReviewDto.prototype, "reviewId", void 0);
+class RejectReviewDto {
+    reviewId;
+}
+exports.RejectReviewDto = RejectReviewDto;
+__decorate([
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], RejectReviewDto.prototype, "reviewId", void 0);
 class ReplyToReviewDto {
     replyText;
 }

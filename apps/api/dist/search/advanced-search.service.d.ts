@@ -1,24 +1,7 @@
 import { DatabaseService } from '../database/database.service';
-import type { Hospital, Doctor, Review, Location } from '@prisma/client';
-export interface HospitalSearchResult extends Hospital {
-    location: Location;
-    reviews: Review[];
-}
-export interface DoctorSearchResult extends Doctor {
-    reviews: Review[];
-    institutions: Array<{
-        id: string;
-        doctorId: string;
-        hospitalId: string;
-        joinedAt: Date;
-        hospital: Hospital & {
-            location: Location;
-        };
-    }>;
-}
 export interface SearchResult {
-    hospital?: HospitalSearchResult[];
-    doctor?: DoctorSearchResult[];
+    hospital?: any[];
+    doctor?: any[];
 }
 interface SearchOptions {
     query: string;
@@ -39,7 +22,7 @@ export declare class AdvancedSearchService {
         maxRating?: number;
         limit?: number;
         offset?: number;
-    }): Promise<HospitalSearchResult[]>;
+    }): unknown;
     advancedDoctorSearch(options: {
         query?: string;
         specialization?: string;
@@ -49,17 +32,14 @@ export declare class AdvancedSearchService {
         institutionId?: string;
         limit?: number;
         offset?: number;
-    }): Promise<DoctorSearchResult[]>;
+    }): unknown;
     getTrendingSearches(limit?: number): Promise<string[]>;
     findNearby(options: {
         latitude: number;
         longitude: number;
         radiusKm?: number;
         limit?: number;
-    }): Promise<Array<Hospital & {
-        location: Location;
-        distance_km?: number;
-    }>>;
+    }): unknown;
     getHospitalsByFilters(filters: {
         institutionType?: string;
         minBeds?: number;
@@ -70,7 +50,7 @@ export declare class AdvancedSearchService {
         minRating?: number;
         limit?: number;
         offset?: number;
-    }): Promise<HospitalSearchResult[]>;
+    }): unknown;
     private _searchHospitals;
     private _searchDoctors;
     private _escapeSearchTerm;

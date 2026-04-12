@@ -41,6 +41,7 @@ var __importStar = (this && this.__importStar) || (function () {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
@@ -54,6 +55,7 @@ let AuthService = class AuthService {
     jwtService;
     databaseService;
     accessTokenExpiry = '8h';
+    refreshTokenExpiry = '7d';
     constructor(usersService, jwtService, databaseService) {
         this.usersService = usersService;
         this.jwtService = jwtService;
@@ -99,10 +101,11 @@ let AuthService = class AuthService {
         const tokenRecord = await this.databaseService.refreshToken.findUnique({
             where: { token: refreshToken },
         });
-        if (!tokenRecord) {
-            throw new common_1.UnauthorizedException('Refresh token not found');
+        if (!tokenRecord ||
+            tokenRecord.expiresAt < new Date() ||
+            tokenRecord.revokedAt !== null) {
+            throw new common_1.UnauthorizedException('Invalid or expired refresh token');
         }
-        this._validateTokenRecord(tokenRecord);
         const user = await this.usersService.findOneByEmail(tokenRecord.userEmail);
         if (!user) {
             throw new common_1.UnauthorizedException('User not found');
@@ -131,7 +134,12 @@ let AuthService = class AuthService {
         if (!tokenRecord) {
             throw new common_1.UnauthorizedException('Refresh token not found');
         }
-        this._validateTokenRecord(tokenRecord);
+        if (tokenRecord.expiresAt < new Date()) {
+            throw new common_1.UnauthorizedException('Refresh token has expired');
+        }
+        if (tokenRecord.revokedAt !== null) {
+            throw new common_1.UnauthorizedException('Refresh token has been revoked');
+        }
         return tokenRecord;
     }
     async registerUser(data) {
@@ -140,23 +148,16 @@ let AuthService = class AuthService {
     async registerHospital(data) {
         return this.usersService.createHospitalAdmin(data);
     }
+    async registerDoctor(data) {
+        return this.usersService.createDoctor(data);
+    }
     _generateRandomToken() {
         return crypto.randomBytes(32).toString('hex');
-    }
-    _validateTokenRecord(tokenRecord) {
-        if (tokenRecord.expiresAt < new Date()) {
-            throw new common_1.UnauthorizedException('Refresh token has expired');
-        }
-        if (tokenRecord.revokedAt !== null) {
-            throw new common_1.UnauthorizedException('Refresh token has been revoked');
-        }
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_service_1.UsersService,
-        jwt_1.JwtService,
-        database_service_1.DatabaseService])
+    __metadata("design:paramtypes", [users_service_1.UsersService, typeof (_a = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _a : Object, database_service_1.DatabaseService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map
