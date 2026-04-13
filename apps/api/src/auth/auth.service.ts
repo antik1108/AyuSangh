@@ -39,7 +39,13 @@ export class AuthService {
   /**
    * Login method that returns both access and refresh tokens
    */
-  async login(user: AuthenticatedUser): Promise<LoginResponse> {
+  async login(user: AuthenticatedUser, expectedRole?: AuthenticatedUser['role']): Promise<LoginResponse> {
+    if (expectedRole && user.role !== expectedRole) {
+      throw new UnauthorizedException(
+        `This account is registered as ${user.role}. Please select the matching role to continue.`,
+      );
+    }
+
     const payload = { email: user.email, sub: user.id, role: user.role };
 
     // Generate access token (short-lived)

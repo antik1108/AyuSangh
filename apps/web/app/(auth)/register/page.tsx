@@ -146,6 +146,12 @@ export default function RegisterPage() {
             Sign in
           </Link>
         </p>
+        <p className="mt-2 text-center text-sm text-slate-500">
+          Registering a hospital?{" "}
+          <Link href="/register/hospital" className="font-medium text-primary-600 hover:underline">
+            Hospital admin signup
+          </Link>
+        </p>
       </div>
     </div>
   );

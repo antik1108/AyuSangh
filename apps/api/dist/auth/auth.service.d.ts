@@ -12,7 +12,7 @@ export declare class AuthService {
     private readonly accessTokenExpiry;
     constructor(usersService: UsersService, jwtService: JwtService, databaseService: DatabaseService);
     validateUser(email: string, pass: string): Promise<AuthenticatedUser | null>;
-    login(user: AuthenticatedUser): Promise<LoginResponse>;
+    login(user: AuthenticatedUser, expectedRole?: AuthenticatedUser['role']): Promise<LoginResponse>;
     refreshAccessToken(refreshToken: string): Promise<RefreshTokenResponse>;
     logout(refreshToken: string): Promise<void>;
     validateRefreshToken(refreshToken: string): Promise<RefreshToken>;

@@ -67,7 +67,10 @@ let AuthService = class AuthService {
         }
         return null;
     }
-    async login(user) {
+    async login(user, expectedRole) {
+        if (expectedRole && user.role !== expectedRole) {
+            throw new common_1.UnauthorizedException(`This account is registered as ${user.role}. Please select the matching role to continue.`);
+        }
         const payload = { email: user.email, sub: user.id, role: user.role };
         const accessToken = this.jwtService.sign(payload, {
             expiresIn: this.accessTokenExpiry,

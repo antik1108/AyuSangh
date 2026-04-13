@@ -14,15 +14,15 @@ export declare class DoctorRepository extends BaseRepository<Doctor, Prisma.Doct
             };
         } & {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             ratingCleanliness: number;
             ratingStaffBehaviour: number;
             ratingWaitTime: number;
+            createdAt: Date;
+            updatedAt: Date;
+            hospitalId: string | null;
             text: string | null;
             ratingOverall: number;
             authorId: string;
-            hospitalId: string | null;
             doctorId: string | null;
             status: import("@prisma/client").$Enums.ReviewStatus;
             adminReply: string | null;
@@ -51,13 +51,13 @@ export declare class DoctorRepository extends BaseRepository<Doctor, Prisma.Doct
         })[];
     } & {
         id: string;
-        firstName: string;
-        lastName: string;
+        phone: string | null;
         profilePhoto: string | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        phone: string | null;
-        isActive: boolean;
+        firstName: string;
+        lastName: string;
         userId: string | null;
         specialization: string;
         experienceYears: number;

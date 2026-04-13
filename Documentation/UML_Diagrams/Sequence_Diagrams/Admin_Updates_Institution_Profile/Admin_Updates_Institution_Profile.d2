@@ -11,7 +11,7 @@ Cloudinary
 Browser -> Controller: "PATCH /institutions/:id {description, phone, bookingLink}"
 Controller -> Guard: "validate JWT token"
 Guard -> Controller: "userId + role extracted"
-Controller -> Guard: "check role is INSTITUTION_ADMIN"
+Controller -> Guard: "check role is HOSPITAL_ADMIN"
 Guard -> Controller: "role verified"
 Controller -> Service: "updateInstitution(userId, institutionId, dto)"
 Service -> Repo: "findById(institutionId)"
@@ -25,3 +25,4 @@ DB -> Repo: "updated Institution row"
 Repo -> Service: "updated Institution object"
 Service -> Controller: "InstitutionResponseDto"
 Controller -> Browser: "HTTP 200 OK - updated institution"
+

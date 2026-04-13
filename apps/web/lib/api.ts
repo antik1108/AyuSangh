@@ -32,8 +32,8 @@ api.interceptors.request.use((config) => {
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 export const authApi = {
-  login: (email: string, password: string) =>
-    api.post<ApiResponse<LoginResponse>>("/auth/login", { email, password }),
+  login: (email: string, password: string, role?: "PATIENT" | "HOSPITAL_ADMIN") =>
+    api.post<ApiResponse<LoginResponse>>("/auth/login", { email, password, role }),
 
   registerPatient: (data: {
     email: string;

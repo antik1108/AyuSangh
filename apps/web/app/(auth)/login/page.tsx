@@ -38,8 +38,9 @@ export default function LoginPage() {
     if (!validate()) return;
     setIsLoading(true);
     try {
-      const res = await authApi.login(email, password);
+      const res = await authApi.login(email, password, role);
       const payload = (res.data as { data: { access_token: string; user: UserType } }).data;
+
       login(payload.access_token, payload.user);
       toast.success("Welcome back!");
       router.push("/dashboard");
@@ -167,6 +168,12 @@ export default function LoginPage() {
             Don&apos;t have an account?{" "}
             <Link href="/register" className="font-medium text-primary-600 hover:underline">
               Create one
+            </Link>
+          </p>
+          <p className="mt-2 text-center text-sm text-slate-500">
+            Hospital admin?{" "}
+            <Link href="/register/hospital" className="font-medium text-primary-600 hover:underline">
+              Register institution
             </Link>
           </p>
         </div>

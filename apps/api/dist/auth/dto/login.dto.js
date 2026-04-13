@@ -10,9 +10,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoginDto = void 0;
+const client_1 = require("@prisma/client");
 const class_validator_1 = require("class-validator");
 class LoginDto {
     email;
+    role;
     password;
 }
 exports.LoginDto = LoginDto;
@@ -21,6 +23,11 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)({ message: 'Email is required' }),
     __metadata("design:type", String)
 ], LoginDto.prototype, "email", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(client_1.Role, { message: 'Invalid role selected' }),
+    __metadata("design:type", String)
+], LoginDto.prototype, "role", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)({ message: 'Password is required' }),
     (0, class_validator_1.MinLength)(6, { message: 'Password must be at least 6 characters' }),
