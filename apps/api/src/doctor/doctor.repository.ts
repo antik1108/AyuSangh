@@ -26,7 +26,22 @@ export class DoctorRepository extends BaseRepository<
         }),
       },
       include: {
-        reviews: true,
+        institutions: { include: { hospital: { select: { id: true, name: true } } } },
+        reviews: { where: { status: 'APPROVED' }, select: { ratingOverall: true } },
+      },
+    });
+  }
+
+  async findById(id: string) {
+    return this.prisma.doctor.findUnique({
+      where: { id },
+      include: {
+        institutions: { include: { hospital: { select: { id: true, name: true, location: true } } } },
+        reviews: {
+          where: { status: 'APPROVED' },
+          include: { author: { select: { firstName: true, lastName: true, email: true } } },
+          orderBy: { createdAt: 'desc' },
+        },
       },
     });
   }

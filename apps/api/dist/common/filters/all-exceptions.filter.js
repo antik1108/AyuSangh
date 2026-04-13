@@ -8,17 +8,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AllExceptionsFilter = void 0;
 const common_1 = require("@nestjs/common");
+const client_1 = require("@prisma/client");
 let AllExceptionsFilter = class AllExceptionsFilter {
     catch(exception, host) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse();
         const request = ctx.getRequest();
-        const status = exception instanceof common_1.HttpException
-            ? exception.getStatus()
-            : common_1.HttpStatus.INTERNAL_SERVER_ERROR;
-        const message = exception instanceof common_1.HttpException
-            ? exception.getResponse()
-            : 'Internal server error';
+        let status = common_1.HttpStatus.INTERNAL_SERVER_ERROR;
+        let message = 'Internal server error';
+        if (exception instanceof common_1.HttpException) {
+            status = exception.getStatus();
+            message = exception.getResponse();
+        }
+        else if (exception instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+            if (exception.code === 'P2002') {
+                status = common_1.HttpStatus.CONFLICT;
+                message = 'An account with this email already exists';
+            }
+        }
         response.status(status).json({
             statusCode: status,
             timestamp: new Date().toISOString(),

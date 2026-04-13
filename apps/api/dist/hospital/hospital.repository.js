@@ -50,6 +50,30 @@ let HospitalRepository = class HospitalRepository extends base_repository_1.Base
             data: { ...image, hospitalId },
         })));
     }
+    async updateInstitution(hospitalId, data) {
+        return this.prisma.hospital.update({
+            where: { id: hospitalId },
+            data,
+            include: { location: true },
+        });
+    }
+    async updateInstitutionRating(hospitalId, scores) {
+        return this.prisma.hospital.update({
+            where: { id: hospitalId },
+            data: scores,
+        });
+    }
+    async findApprovedReviews(hospitalId) {
+        return this.prisma.review.findMany({
+            where: { hospitalId, status: 'APPROVED' },
+            select: {
+                ratingOverall: true,
+                ratingCleanliness: true,
+                ratingStaffBehaviour: true,
+                ratingWaitTime: true,
+            },
+        });
+    }
     async findImage(imageId) {
         return this.prisma.institutionImage.findUnique({ where: { id: imageId } });
     }

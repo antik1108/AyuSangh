@@ -19,12 +19,26 @@ const review_module_1 = require("./review/review.module");
 const search_module_1 = require("./search/search.module");
 const community_module_1 = require("./community/community.module");
 const cost_module_1 = require("./cost/cost.module");
+const accreditation_module_1 = require("./accreditation/accreditation.module");
+const analytics_module_1 = require("./analytics/analytics.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [database_module_1.DatabaseModule, users_module_1.UsersModule, auth_module_1.AuthModule, hospital_module_1.HospitalModule, doctor_module_1.DoctorModule, review_module_1.ReviewModule, search_module_1.SearchModule, community_module_1.CommunityModule, cost_module_1.CostModule],
+        imports: [
+            database_module_1.DatabaseModule,
+            users_module_1.UsersModule,
+            auth_module_1.AuthModule,
+            hospital_module_1.HospitalModule,
+            doctor_module_1.DoctorModule,
+            review_module_1.ReviewModule,
+            search_module_1.SearchModule,
+            community_module_1.CommunityModule,
+            cost_module_1.CostModule,
+            accreditation_module_1.AccreditationModule,
+            analytics_module_1.AnalyticsModule,
+        ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

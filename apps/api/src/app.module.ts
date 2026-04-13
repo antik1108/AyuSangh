@@ -10,9 +10,23 @@ import { ReviewModule } from './review/review.module';
 import { SearchModule } from './search/search.module';
 import { CommunityModule } from './community/community.module';
 import { CostModule } from './cost/cost.module';
+import { AccreditationModule } from './accreditation/accreditation.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule, AuthModule, HospitalModule, DoctorModule, ReviewModule, SearchModule, CommunityModule, CostModule],
+  imports: [
+    DatabaseModule,
+    UsersModule,
+    AuthModule,
+    HospitalModule,
+    DoctorModule,
+    ReviewModule,
+    SearchModule,
+    CommunityModule,
+    CostModule,
+    AccreditationModule,
+    AnalyticsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

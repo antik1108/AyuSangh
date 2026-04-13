@@ -23,6 +23,7 @@ const roles_guard_1 = require("../auth/guards/roles.guard");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 const client_1 = require("@prisma/client");
 const register_hospital_dto_1 = require("../auth/dto/register-hospital.dto");
+const update_hospital_dto_1 = require("./dto/update-hospital.dto");
 let HospitalController = class HospitalController {
     hospitalService;
     favouritesService;
@@ -43,6 +44,9 @@ let HospitalController = class HospitalController {
     }
     registerHospital(data) {
         return this.hospitalService.registerHospital(data);
+    }
+    updateHospital(req, id, dto) {
+        return this.hospitalService.updateInstitution(req.user.userId, req.user.role, id, dto);
     }
     async uploadProfilePhoto(req, hospitalId, file) {
         if (!file) {
@@ -116,6 +120,17 @@ __decorate([
     __metadata("design:paramtypes", [register_hospital_dto_1.RegisterHospitalDto]),
     __metadata("design:returntype", void 0)
 ], HospitalController.prototype, "registerHospital", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.Role.HOSPITAL_ADMIN, client_1.Role.PLATFORM_ADMIN),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, update_hospital_dto_1.UpdateHospitalDto]),
+    __metadata("design:returntype", void 0)
+], HospitalController.prototype, "updateHospital", null);
 __decorate([
     (0, common_1.Post)(':hospitalId/upload-photo'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),

@@ -12,4 +12,22 @@ export class CommunityRepository extends BaseRepository<
   constructor(private readonly prisma: DatabaseService) {
     super(prisma.communityPost);
   }
+
+  async findAll() {
+    return this.prisma.communityPost.findMany({
+      include: {
+        author: { select: { id: true, firstName: true, lastName: true, email: true, role: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async create(data: Prisma.CommunityPostCreateInput) {
+    return this.prisma.communityPost.create({
+      data,
+      include: {
+        author: { select: { id: true, firstName: true, lastName: true, email: true, role: true } },
+      },
+    });
+  }
 }

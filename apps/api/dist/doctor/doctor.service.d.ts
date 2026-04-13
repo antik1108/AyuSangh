@@ -19,7 +19,51 @@ export declare class DoctorService {
         qualifications: string[];
         consultationFee: number | null;
     }[]>;
-    getProfile(id: string): Promise<{
+    getProfile(id: string): Promise<({
+        reviews: ({
+            author: {
+                email: string;
+                firstName: string | null;
+                lastName: string | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            ratingCleanliness: number;
+            ratingStaffBehaviour: number;
+            ratingWaitTime: number;
+            text: string | null;
+            ratingOverall: number;
+            authorId: string;
+            hospitalId: string | null;
+            doctorId: string | null;
+            status: import("@prisma/client").$Enums.ReviewStatus;
+            adminReply: string | null;
+            adminReplyAt: Date | null;
+        })[];
+        institutions: ({
+            hospital: {
+                name: string;
+                id: string;
+                location: {
+                    id: string;
+                    address: string;
+                    city: string;
+                    state: string;
+                    zipCode: string;
+                    country: string;
+                    latitude: number | null;
+                    longitude: number | null;
+                };
+            };
+        } & {
+            id: string;
+            hospitalId: string;
+            doctorId: string;
+            joinedAt: Date;
+        })[];
+    } & {
         id: string;
         firstName: string;
         lastName: string;
@@ -34,7 +78,7 @@ export declare class DoctorService {
         bio: string | null;
         qualifications: string[];
         consultationFee: number | null;
-    } | null>;
+    }) | null>;
     registerDoctor(dto: RegisterDoctorDto): Promise<{
         id: string;
         firstName: string;

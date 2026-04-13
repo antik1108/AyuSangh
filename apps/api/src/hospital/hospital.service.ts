@@ -1,5 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { HospitalRepository } from './hospital.repository';
+import { UpdateHospitalDto } from './dto/update-hospital.dto';
 
 interface UploadResult {
   url: string;
@@ -36,6 +37,68 @@ export class HospitalService {
           country: data.country,
         },
       },
+    });
+  }
+
+  /**
+   * updateInstitution — PATCH /hospitals/:id
+   *
+   * Implements the sequence diagram flow:
+   *   1. Find institution by id
+   *   2. Verify the requesting user owns this institution (or is PLATFORM_ADMIN)
+   *   3. Apply partial update
+   */
+  async updateInstitution(
+    userId: string,
+    userRole: string,
+    institutionId: string,
+    dto: UpdateHospitalDto,
+  ) {
+    const hospital = await this.hospitalRepo.findById(institutionId);
+    if (!hospital) throw new NotFoundException('Hospital not found');
+
+    // Ownership check — PLATFORM_ADMIN bypasses this
+    if (userRole !== 'PLATFORM_ADMIN' && hospital.adminId !== userId) {
+      throw new ForbiddenException('You do not own this institution');
+    }
+
+    return this.hospitalRepo.updateInstitution(institutionId, dto);
+  }
+
+  /**
+   * recalculateAndPersistRating — called by ReviewService after approve/reject
+   *
+   * Fetches all approved reviews for the hospital, runs them through the
+   * DefaultRatingStrategy arithmetic mean, and persists the result.
+   * Matches the Submit Review sequence diagram step:
+   *   "Service -> Repo: updateInstitutionRating(institutionId, newAvg)"
+   */
+  async recalculateAndPersistRating(hospitalId: string): Promise<void> {
+    const hospital = await this.hospitalRepo.findById(hospitalId);
+    if (!hospital) return;
+
+    // Fetch all approved reviews directly via repository
+    const reviews = await this.hospitalRepo.findApprovedReviews(hospitalId);
+    if (reviews.length === 0) return;
+
+    const count = reviews.length;
+    const round = (n: number) => Math.round((n / count) * 10) / 10;
+
+    const totals = reviews.reduce(
+      (acc, r) => ({
+        overall:        acc.overall        + r.ratingOverall,
+        cleanliness:    acc.cleanliness    + r.ratingCleanliness,
+        staffBehaviour: acc.staffBehaviour + r.ratingStaffBehaviour,
+        waitTime:       acc.waitTime       + r.ratingWaitTime,
+      }),
+      { overall: 0, cleanliness: 0, staffBehaviour: 0, waitTime: 0 },
+    );
+
+    await this.hospitalRepo.updateInstitutionRating(hospitalId, {
+      rating:               round(totals.overall),
+      ratingCleanliness:    round(totals.cleanliness),
+      ratingStaffBehaviour: round(totals.staffBehaviour),
+      ratingWaitTime:       round(totals.waitTime),
     });
   }
 

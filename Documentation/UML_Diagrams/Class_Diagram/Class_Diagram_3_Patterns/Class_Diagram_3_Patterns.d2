@@ -92,6 +92,9 @@ HospitalRepository: {
   shape: class
   style.fill: "#e3f2fd"
   +searchHospitals(nameQuery: String): HospitalArray
+  +updateInstitution(hospitalId: String, data: Object): Hospital
+  +updateInstitutionRating(hospitalId: String, scores: Object): Hospital
+  +findApprovedReviews(hospitalId: String): ReviewArray
   +updateProfilePhoto(hospitalId: String): Hospital
   +addImages(hospitalId: String): Object
   +findImage(imageId: String): InstitutionImage

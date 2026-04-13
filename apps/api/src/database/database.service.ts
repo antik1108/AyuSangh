@@ -117,6 +117,13 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     return this.prismaClient.cost;
   }
 
+  /**
+   * Accreditation model delegate - fully typed access to accreditation operations
+   */
+  get accreditation(): PrismaClient['accreditation'] {
+    return this.prismaClient.accreditation;
+  }
+
   // ============================================================
   // Prisma client methods for advanced operations
   // ============================================================

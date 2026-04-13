@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Delete,
   Body,
   Param,
@@ -22,6 +23,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 import { RegisterHospitalDto } from '../auth/dto/register-hospital.dto';
+import { UpdateHospitalDto } from './dto/update-hospital.dto';
 import type { Request as ExpressRequest } from 'express';
 import type { Express } from 'express';
 
@@ -59,6 +61,28 @@ export class HospitalController {
   @Roles(Role.PLATFORM_ADMIN, Role.HOSPITAL_ADMIN)
   registerHospital(@Body() data: RegisterHospitalDto) {
     return this.hospitalService.registerHospital(data);
+  }
+
+  /**
+   * PATCH /hospitals/:id
+   *
+   * Implements: Admin Updates Institution Profile sequence diagram
+   * Flow: JWT → role check → ownership verify → partial update
+   */
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.HOSPITAL_ADMIN, Role.PLATFORM_ADMIN)
+  updateHospital(
+    @Request() req: RequestWithUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateHospitalDto,
+  ) {
+    return this.hospitalService.updateInstitution(
+      req.user.userId,
+      req.user.role,
+      id,
+      dto,
+    );
   }
 
   // Image Upload Endpoints

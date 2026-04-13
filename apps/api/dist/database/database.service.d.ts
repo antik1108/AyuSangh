@@ -16,6 +16,7 @@ export declare class DatabaseService implements OnModuleInit, OnModuleDestroy {
     get location(): PrismaClient['location'];
     get communityPost(): PrismaClient['communityPost'];
     get cost(): PrismaClient['cost'];
+    get accreditation(): PrismaClient['accreditation'];
     get $queryRaw(): PrismaClient['$queryRaw'];
     get $transaction(): PrismaClient['$transaction'];
 }

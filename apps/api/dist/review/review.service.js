@@ -14,12 +14,15 @@ const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
 const review_repository_1 = require("./review.repository");
 const rating_context_1 = require("./rating.context");
+const hospital_service_1 = require("../hospital/hospital.service");
 let ReviewService = class ReviewService {
     reviewRepo;
     ratingContext;
-    constructor(reviewRepo, ratingContext) {
+    hospitalService;
+    constructor(reviewRepo, ratingContext, hospitalService) {
         this.reviewRepo = reviewRepo;
         this.ratingContext = ratingContext;
+        this.hospitalService = hospitalService;
     }
     async submitReview(userId, dto) {
         if (!dto.hospitalId && !dto.doctorId) {
@@ -79,13 +82,21 @@ let ReviewService = class ReviewService {
         const review = await this.reviewRepo.findById(reviewId);
         if (!review)
             throw new common_1.NotFoundException('Review not found');
-        return this.reviewRepo.updateStatus(reviewId, client_1.ReviewStatus.APPROVED);
+        const updated = await this.reviewRepo.updateStatus(reviewId, client_1.ReviewStatus.APPROVED);
+        if (review.hospitalId) {
+            await this.hospitalService.recalculateAndPersistRating(review.hospitalId);
+        }
+        return updated;
     }
     async rejectReview(reviewId) {
         const review = await this.reviewRepo.findById(reviewId);
         if (!review)
             throw new common_1.NotFoundException('Review not found');
-        return this.reviewRepo.updateStatus(reviewId, client_1.ReviewStatus.REJECTED);
+        const updated = await this.reviewRepo.updateStatus(reviewId, client_1.ReviewStatus.REJECTED);
+        if (review.hospitalId) {
+            await this.hospitalService.recalculateAndPersistRating(review.hospitalId);
+        }
+        return updated;
     }
     async replyToReview(reviewId, replyText) {
         const review = await this.reviewRepo.findById(reviewId);
@@ -98,6 +109,7 @@ exports.ReviewService = ReviewService;
 exports.ReviewService = ReviewService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [review_repository_1.ReviewRepository,
-        rating_context_1.RatingContext])
+        rating_context_1.RatingContext,
+        hospital_service_1.HospitalService])
 ], ReviewService);
 //# sourceMappingURL=review.service.js.map

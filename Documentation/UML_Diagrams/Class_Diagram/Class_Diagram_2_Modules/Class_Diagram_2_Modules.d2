@@ -35,6 +35,8 @@ AuthService: {
 UsersService: {
   shape: class
   style.fill: "#fce4ec"
+  style.stroke-dash: 4
+  "<<users module>>": ""
   +findOneByEmail(email: String): User
   +findOneById(id: String): User
   +createPatient(data: RegisterUserDto): User
@@ -75,6 +77,7 @@ HospitalController: {
   +searchHospitals(name: String): HospitalArray
   +getProfile(id: String): Hospital
   +registerHospital(dto: Object): Hospital
+  +updateHospital(id: String, dto: UpdateHospitalDto): Hospital
   +uploadProfilePhoto(hospitalId: String): Object
   +uploadImages(hospitalId: String): Object
   +deleteImage(hospitalId: String): Object
@@ -90,6 +93,7 @@ HospitalService: {
   +search(name: String): HospitalArray
   +getProfile(id: String): Hospital
   +registerHospital(data: Object): Hospital
+  +updateInstitution(userId: String, role: String, id: String, dto: UpdateHospitalDto): Hospital
   +updateProfilePhoto(hospitalId: String): Hospital
   +addImages(hospitalId: String): Object
   +deleteImage(hospitalId: String): Object
@@ -99,6 +103,7 @@ HospitalRepository: {
   shape: class
   style.fill: "#fff3e0"
   +searchHospitals(nameQuery: String): HospitalArray
+  +updateInstitution(hospitalId: String, data: Object): Hospital
   +updateProfilePhoto(hospitalId: String): Hospital
   +addImages(hospitalId: String): Object
   +findImage(imageId: String): InstitutionImage

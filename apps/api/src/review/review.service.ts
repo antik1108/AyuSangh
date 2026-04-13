@@ -7,6 +7,7 @@ import {
 import { ReviewStatus } from '@prisma/client';
 import { ReviewRepository } from './review.repository';
 import { RatingContext } from './rating.context';
+import { HospitalService } from '../hospital/hospital.service';
 import { SubmitReviewDto, UpdateReviewDto } from './dto/submit-review.dto';
 
 @Injectable()
@@ -14,6 +15,7 @@ export class ReviewService {
   constructor(
     private readonly reviewRepo: ReviewRepository,
     private readonly ratingContext: RatingContext,
+    private readonly hospitalService: HospitalService,
   ) {}
 
   // ─────────────────────────────────────────────
@@ -102,13 +104,27 @@ export class ReviewService {
   async approveReview(reviewId: string) {
     const review = await this.reviewRepo.findById(reviewId);
     if (!review) throw new NotFoundException('Review not found');
-    return this.reviewRepo.updateStatus(reviewId, ReviewStatus.APPROVED);
+    const updated = await this.reviewRepo.updateStatus(reviewId, ReviewStatus.APPROVED);
+
+    // Sequence diagram: "Service -> Repo: updateInstitutionRating(institutionId, newAvg)"
+    if (review.hospitalId) {
+      await this.hospitalService.recalculateAndPersistRating(review.hospitalId);
+    }
+
+    return updated;
   }
 
   async rejectReview(reviewId: string) {
     const review = await this.reviewRepo.findById(reviewId);
     if (!review) throw new NotFoundException('Review not found');
-    return this.reviewRepo.updateStatus(reviewId, ReviewStatus.REJECTED);
+    const updated = await this.reviewRepo.updateStatus(reviewId, ReviewStatus.REJECTED);
+
+    // Recalculate after rejection too — removes the review from the average
+    if (review.hospitalId) {
+      await this.hospitalService.recalculateAndPersistRating(review.hospitalId);
+    }
+
+    return updated;
   }
 
   async replyToReview(reviewId: string, replyText: string) {

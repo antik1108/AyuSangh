@@ -56,6 +56,9 @@ let DatabaseService = class DatabaseService {
     get cost() {
         return this.prismaClient.cost;
     }
+    get accreditation() {
+        return this.prismaClient.accreditation;
+    }
     get $queryRaw() {
         return this.prismaClient.$queryRaw.bind(this.prismaClient);
     }

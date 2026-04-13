@@ -2,13 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InstitutionType, Review } from '@prisma/client';
 import { AggregatedScore, IRatingStrategy } from './interfaces/rating-strategy.interface';
 import { DefaultRatingStrategy } from './strategies/default-rating.strategy';
+import { HospitalRatingStrategy } from './strategies/hospital-rating.strategy';
+import { LabRatingStrategy } from './strategies/lab-rating.strategy';
 
 /**
  * RatingContext — Strategy Pattern context class (§3.1 Pattern 2)
  *
  * Selects the correct IRatingStrategy at runtime based on institution type.
- * New strategies for specific institution types (e.g. DiagnosticCentreRatingStrategy)
- * can be registered without modifying this class — Open/Closed Principle.
+ * New strategies for specific institution types can be registered without
+ * modifying this class — Open/Closed Principle.
  *
  * @example
  * const score = ratingContext.calculate(reviews, InstitutionType.HOSPITAL);
@@ -17,7 +19,16 @@ import { DefaultRatingStrategy } from './strategies/default-rating.strategy';
 export class RatingContext {
   private readonly strategies = new Map<InstitutionType, IRatingStrategy>();
 
-  constructor(private readonly defaultStrategy: DefaultRatingStrategy) {}
+  constructor(
+    private readonly defaultStrategy: DefaultRatingStrategy,
+    hospitalStrategy: HospitalRatingStrategy,
+    labStrategy: LabRatingStrategy,
+  ) {
+    // Register institution-type-specific strategies
+    this.strategies.set(InstitutionType.HOSPITAL, hospitalStrategy);
+    this.strategies.set(InstitutionType.NURSING_HOME, hospitalStrategy);
+    this.strategies.set(InstitutionType.DIAGNOSTIC_CENTRE, labStrategy);
+  }
 
   /**
    * Register a custom strategy for a specific institution type.

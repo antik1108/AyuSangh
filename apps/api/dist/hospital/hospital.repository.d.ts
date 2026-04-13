@@ -10,6 +10,19 @@ export declare class HospitalRepository extends BaseRepository<Hospital, Prisma.
         imageUrl: string;
         isProfilePhoto: boolean;
     }>): Promise<InstitutionImage[]>;
+    updateInstitution(hospitalId: string, data: Prisma.HospitalUpdateInput): Promise<Hospital>;
+    updateInstitutionRating(hospitalId: string, scores: {
+        rating: number;
+        ratingCleanliness: number;
+        ratingStaffBehaviour: number;
+        ratingWaitTime: number;
+    }): Promise<Hospital>;
+    findApprovedReviews(hospitalId: string): Promise<{
+        ratingCleanliness: number;
+        ratingStaffBehaviour: number;
+        ratingWaitTime: number;
+        ratingOverall: number;
+    }[]>;
     findImage(imageId: string): Promise<InstitutionImage | null>;
     deleteImage(imageId: string): Promise<InstitutionImage>;
 }

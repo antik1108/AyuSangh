@@ -39,6 +39,37 @@ let HospitalService = class HospitalService {
             },
         });
     }
+    async updateInstitution(userId, userRole, institutionId, dto) {
+        const hospital = await this.hospitalRepo.findById(institutionId);
+        if (!hospital)
+            throw new common_1.NotFoundException('Hospital not found');
+        if (userRole !== 'PLATFORM_ADMIN' && hospital.adminId !== userId) {
+            throw new common_1.ForbiddenException('You do not own this institution');
+        }
+        return this.hospitalRepo.updateInstitution(institutionId, dto);
+    }
+    async recalculateAndPersistRating(hospitalId) {
+        const hospital = await this.hospitalRepo.findById(hospitalId);
+        if (!hospital)
+            return;
+        const reviews = await this.hospitalRepo.findApprovedReviews(hospitalId);
+        if (reviews.length === 0)
+            return;
+        const count = reviews.length;
+        const round = (n) => Math.round((n / count) * 10) / 10;
+        const totals = reviews.reduce((acc, r) => ({
+            overall: acc.overall + r.ratingOverall,
+            cleanliness: acc.cleanliness + r.ratingCleanliness,
+            staffBehaviour: acc.staffBehaviour + r.ratingStaffBehaviour,
+            waitTime: acc.waitTime + r.ratingWaitTime,
+        }), { overall: 0, cleanliness: 0, staffBehaviour: 0, waitTime: 0 });
+        await this.hospitalRepo.updateInstitutionRating(hospitalId, {
+            rating: round(totals.overall),
+            ratingCleanliness: round(totals.cleanliness),
+            ratingStaffBehaviour: round(totals.staffBehaviour),
+            ratingWaitTime: round(totals.waitTime),
+        });
+    }
     async updateProfilePhoto(hospitalId, photoUrl) {
         const hospital = await this.hospitalRepo.findById(hospitalId);
         if (!hospital)

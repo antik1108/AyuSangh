@@ -17,16 +17,13 @@ export declare class SearchController {
     getNearbyHospitals(latitude: number, longitude: number, radiusKm?: number, limit?: number): Promise<({
         name: string;
         id: string;
-        email: string | null;
-        profilePhoto: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         description: string | null;
         institutionType: import("@prisma/client").$Enums.InstitutionType;
         adminId: string;
         locationId: string;
         phone: string | null;
         website: string | null;
+        email: string | null;
         bookingLink: string | null;
         pincode: string | null;
         services: string[];
@@ -35,7 +32,10 @@ export declare class SearchController {
         ratingCleanliness: number | null;
         ratingStaffBehaviour: number | null;
         ratingWaitTime: number | null;
+        profilePhoto: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     } & {
         location: import("@prisma/client").Location;
         distance_km?: number;

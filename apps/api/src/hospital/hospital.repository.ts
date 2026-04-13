@@ -54,6 +54,54 @@ export class HospitalRepository extends BaseRepository<
     );
   }
 
+  async updateInstitution(
+    hospitalId: string,
+    data: Prisma.HospitalUpdateInput,
+  ): Promise<Hospital> {
+    return this.prisma.hospital.update({
+      where: { id: hospitalId },
+      data,
+      include: { location: true },
+    });
+  }
+
+  /**
+   * updateInstitutionRating — called after review approve/reject
+   *
+   * Persists the recalculated aggregate rating scores back to the Hospital row.
+   * Matches the Submit Review sequence diagram step:
+   *   "Service -> Repo: updateInstitutionRating(institutionId, newAvg)"
+   */
+  async updateInstitutionRating(
+    hospitalId: string,
+    scores: {
+      rating: number;
+      ratingCleanliness: number;
+      ratingStaffBehaviour: number;
+      ratingWaitTime: number;
+    },
+  ): Promise<Hospital> {
+    return this.prisma.hospital.update({
+      where: { id: hospitalId },
+      data:  scores,
+    });
+  }
+
+  /**
+   * findApprovedReviews — used by HospitalService.recalculateAndPersistRating
+   */
+  async findApprovedReviews(hospitalId: string) {
+    return this.prisma.review.findMany({
+      where: { hospitalId, status: 'APPROVED' },
+      select: {
+        ratingOverall:        true,
+        ratingCleanliness:    true,
+        ratingStaffBehaviour: true,
+        ratingWaitTime:       true,
+      },
+    });
+  }
+
   async findImage(imageId: string): Promise<InstitutionImage | null> {
     return this.prisma.institutionImage.findUnique({ where: { id: imageId } });
   }

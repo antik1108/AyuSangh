@@ -5,8 +5,9 @@ import {
   IsNumber,
   IsArray,
   IsUUID,
-  Min,
+  IsEmail,
   MinLength,
+  Min,
 } from 'class-validator';
 
 /**
@@ -14,6 +15,13 @@ import {
  * Captures all doctor profile fields including qualifications and consultation fee.
  */
 export class RegisterDoctorDto {
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @MinLength(6)
+  password: string;
+
   @IsString()
   @MinLength(1)
   firstName: string;

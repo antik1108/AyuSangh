@@ -51,16 +51,6 @@ let UsersService = class UsersService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async findOneByEmail(email) {
-        return this.prisma.user.findUnique({
-            where: { email },
-        });
-    }
-    async findOneById(id) {
-        return this.prisma.user.findUnique({
-            where: { id },
-        });
-    }
     async createPatient(data) {
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(data.password, salt);
@@ -108,6 +98,49 @@ let UsersService = class UsersService {
             return {
                 user: { id: user.id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName },
                 hospital: { id: hospital.id, name: hospital.name }
+            };
+        });
+    }
+    async findOneByEmail(email) {
+        return this.prisma.user.findUnique({ where: { email } });
+    }
+    async createDoctor(data) {
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(data.password, salt);
+        return this.prisma.$transaction(async (tx) => {
+            const user = await tx.user.create({
+                data: {
+                    email: data.email,
+                    passwordHash,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    role: 'DOCTOR',
+                },
+            });
+            const doctor = await tx.doctor.create({
+                data: {
+                    userId: user.id,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    specialization: data.specialization,
+                    experienceYears: data.experienceYears,
+                },
+            });
+            return {
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    role: user.role,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                },
+                doctor: {
+                    id: doctor.id,
+                    firstName: doctor.firstName,
+                    lastName: doctor.lastName,
+                    specialization: doctor.specialization,
+                    experienceYears: doctor.experienceYears,
+                },
             };
         });
     }
