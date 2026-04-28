@@ -1,0 +1,230 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PATIENT
+  DOCTOR
+  HOSPITAL_ADMIN
+  PLATFORM_ADMIN
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id               String   @id @default(uuid())
+  email            String   @unique
+  passwordHash     String
+  name             String
+  role             UserRole @default(PATIENT)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  doctorProfile Doctor?
+  reviews       Review[]
+  reviewReplies ReviewReply[] @relation("AdminReviewReplies")
+  favourites    Favourite[]
+  refreshTokens RefreshToken[]
+  communityPosts CommunityPost[]
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Institution {
+  id              String   @id @default(uuid())
+  name            String
+  type            String
+  description     String?
+  city            String
+  pincode         String
+  address         String
+  phone           String
+  bookingLink     String?
+  averageRating   Decimal  @default(0) @db.Decimal(3, 2)
+  overallAvg      Decimal  @default(0) @db.Decimal(3, 2)
+  cleanlinessAvg  Decimal  @default(0) @db.Decimal(3, 2)
+  staffAvg        Decimal  @default(0) @db.Decimal(3, 2)
+  waitTimeAvg     Decimal  @default(0) @db.Decimal(3, 2)
+  totalReviews    Int      @default(0)
+  isVerified      Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  doctors        DoctorInstitution[]
+  reviews        Review[]
+  photos         InstitutionPhoto[]
+  location       Location?
+  accreditations Accreditation[]
+  departments    Department[]
+  favourites     Favourite[]
+  costs          Cost[]
+}
+
+model Doctor {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  name            String
+  specialty       String
+  experience      Int
+  consultationFee Decimal  @db.Decimal(10, 2)
+  qualifications  String?
+  bio             String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institutions DoctorInstitution[]
+  reviews      Review[]
+}
+
+model DoctorInstitution {
+  id            String @id @default(uuid())
+  doctorId      String
+  institutionId String
+
+  doctor      Doctor      @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@unique([doctorId, institutionId])
+}
+
+model Review {
+  id                String   @id @default(uuid())
+  userId            String
+  institutionId     String
+  doctorId          String?
+  text              String
+  overallRating     Int
+  cleanlinessRating Int
+  staffRating       Int
+  waitTimeRating    Int
+  status            ReviewStatus @default(PENDING)
+  isDeleted         Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institution  Institution  @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  doctor       Doctor?      @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  reviewReplies ReviewReply[]
+
+  @@index([institutionId])
+  @@index([userId])
+  @@index([doctorId])
+}
+
+model ReviewReply {
+  id          String   @id @default(uuid())
+  reviewId    String
+  adminUserId String
+  text        String
+  createdAt   DateTime @default(now())
+
+  review     Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  adminUser  User   @relation("AdminReviewReplies", fields: [adminUserId], references: [id], onDelete: Cascade)
+}
+
+model InstitutionPhoto {
+  id            String   @id @default(uuid())
+  institutionId String
+  cloudinaryUrl String
+  publicId      String
+  caption       String?
+  displayOrder  Int      @map("order")
+  createdAt     DateTime @default(now())
+
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@index([institutionId])
+}
+
+model Location {
+  id            String  @id @default(uuid())
+  institutionId String  @unique
+  latitude      Decimal @db.Decimal(10, 7)
+  longitude     Decimal @db.Decimal(10, 7)
+  googleMapsUrl String?
+
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+}
+
+model Accreditation {
+  id            String    @id @default(uuid())
+  institutionId String
+  type          String
+  certNumber    String
+  issuedAt      DateTime? @db.Date
+  expiresAt     DateTime? @db.Date
+
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@index([institutionId])
+}
+
+model Department {
+  id            String @id @default(uuid())
+  institutionId String
+  name          String
+  description   String?
+
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@index([institutionId])
+}
+
+model Favourite {
+  id            String   @id @default(uuid())
+  userId        String
+  institutionId String
+  createdAt     DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, institutionId])
+}
+
+model CommunityPost {
+  id        String   @id @default(uuid())
+  userId    String
+  text      String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Cost {
+  id            String   @id @default(uuid())
+  institutionId String
+  serviceName   String
+  price         Decimal  @db.Decimal(10, 2)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@index([institutionId])
+}
