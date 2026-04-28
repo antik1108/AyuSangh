@@ -108,15 +108,12 @@ The project follows a monorepo architecture to enable code sharing across future
 health-platform/
 ├── apps/
 │   ├── api/                   -> NestJS Backend Application
-│   └── web/                   -> Frontend Application (future phase)
+│   │   └── prisma/
+│   │       └── schema.prisma  -> Database schema definition
+│   └── web/                   -> Next.js Frontend Application (with Tailwind CSS)
 │
 ├── packages/
-│   ├── shared-types/          -> Shared TypeScript interfaces and enums
-│   ├── config/                -> Shared configuration modules
-│   └── utils/                 -> Shared utility functions
-│
-├── prisma/
-│   └── schema.prisma          -> Master database schema definition
+│   └── shared-types/          -> Shared TypeScript interfaces and enums
 │
 ├── pnpm-workspace.yaml        -> Workspace configuration
 ├── package.json               -> Root package manifest
@@ -127,17 +124,18 @@ health-platform/
 
 ### Application modules
 
-All business domains are encapsulated in individual feature modules located under `src/modules/`:
+All business domains are encapsulated in individual feature modules located under `src/`:
 
 - auth
+- users
 - hospital
 - doctor
 - review
 - cost
-- accreditation
 - search
 - community
-- analytics
+- common
+- database
 
 ### Module file structure standard
 
