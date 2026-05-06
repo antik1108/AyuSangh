@@ -82,7 +82,7 @@ AyuSangh/
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (LTS version recommended)
 - [pnpm](https://pnpm.io/) (v10+ required. Do **NOT** use `npm` or `yarn`)
-- [Docker & Docker Compose](https://www.docker.com/) (Required for the database)
+- A Neon project with `DATABASE_URL` and `DIRECT_URL` set in `apps/api/.env`
 
 ### Step-by-Step Installation
 
@@ -103,11 +103,11 @@ AyuSangh/
    - Duplicate the `.env.example` file and rename it to `.env` in both directories.
    - Fill in the required environment variables (e.g., database connection string, JWT secrets).
 
-4. **Start the Database**
-   Spin up the PostgreSQL instance using Docker:
-   ```bash
-   docker-compose up -d
-   ```
+4. **Connect to Neon**
+   Use your Neon project as the database source for the API.
+   - Set `apps/api/.env` with the pooled `DATABASE_URL` and direct `DIRECT_URL`
+   - Keep `JWT_SECRET` and `JWT_REFRESH_SECRET` local and out of version control
+   - If you need a fresh branch later, create it in Neon and update the env vars
 
 5. **Database Migration & Seeding**
    Initialize your database schema and seed it with mock data:
@@ -135,6 +135,39 @@ pnpm dev
 - **Backend (NestJS API)**: [http://localhost:3001](http://localhost:3001)
 
 *To gracefully stop all processes, press `Ctrl+C` in your terminal.*
+
+---
+
+## 🌐 Render Backend Setup
+
+Use Render for the API service only. Point it at the `apps/api` workspace and keep the web app on Vercel.
+
+### Render service settings
+
+- Service type: Web Service
+- Root Directory: `apps/api`
+- Runtime: Node
+- Build Command: `pnpm install --frozen-lockfile && pnpm run build`
+- Start Command: `pnpm run start:prod`
+- Port: Render injects `PORT` automatically; the app already reads `process.env.PORT`
+
+### Render environment variables
+
+- `DATABASE_URL` = your Neon pooled connection string
+- `DIRECT_URL` = your Neon direct connection string
+- `JWT_SECRET` = a long random secret
+- `JWT_REFRESH_SECRET` = a different long random secret
+- `JWT_ACCESS_EXPIRES_IN` = `15m`
+- `JWT_REFRESH_EXPIRES_IN` = `7d`
+- `FRONTEND_URL` = your Vercel domain, for example `https://ayu-sangh-web.vercel.app`
+- `PORT` = leave unset unless you want to override Render's default
+
+### Important notes
+
+- Keep `DATABASE_URL` pointed at the Neon pooler endpoint for runtime traffic.
+- Keep `DIRECT_URL` pointed at the direct Neon endpoint for Prisma migrations.
+- Your API is mounted under `/api` because `apps/api/src/main.ts` sets a global prefix.
+- If Render asks for an install command, use `pnpm install --frozen-lockfile`.
 
 ---
 
